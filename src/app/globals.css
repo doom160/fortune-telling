@@ -1680,6 +1680,430 @@ button:hover {
   }
 }
 
+/* ═══════════════════════════════════════════════ */
+/* Numerology Styles                              */
+/* ═══════════════════════════════════════════════ */
+
+.numerology-core-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.7rem;
+  margin-bottom: 1.5rem;
+}
+
+.numerology-number-card {
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  background: rgba(180, 136, 46, 0.04);
+  padding: 0.75rem 0.5rem;
+  text-align: center;
+  transition: border-color 0.2s;
+}
+
+.numerology-number-card:hover {
+  border-color: var(--gold-dim);
+}
+
+.number-label {
+  margin: 0;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.number-label-zh {
+  margin: 0;
+  font-size: 0.65rem;
+  color: var(--muted-dim);
+}
+
+.number-value {
+  margin: 0.25rem 0;
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 300;
+  color: var(--gold);
+  line-height: 1.1;
+}
+
+.number-keyword {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* Lo Shu Grid */
+
+.loshu-section {
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.loshu-section h3 {
+  margin: 0 0 0.25rem;
+}
+
+.loshu-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+  max-width: 260px;
+  margin: 0.75rem auto 1rem;
+}
+
+.loshu-cell {
+  aspect-ratio: 1;
+  border: 1px solid var(--panel-border);
+  background: var(--panel-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border-radius: 4px;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.loshu-cell.has-arrow {
+  border-color: var(--gold);
+  background: rgba(180, 136, 46, 0.1);
+}
+
+.loshu-cell.is-empty {
+  opacity: 0.35;
+}
+
+.loshu-position {
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  font-size: 0.55rem;
+  color: var(--muted-dim);
+  font-weight: 600;
+}
+
+.loshu-count {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 300;
+  color: var(--foreground);
+  line-height: 1;
+}
+
+.loshu-cell.has-arrow .loshu-count {
+  color: var(--gold);
+}
+
+.loshu-arrows {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.loshu-arrow-badge {
+  background: rgba(180, 136, 46, 0.12);
+  color: var(--gold);
+  padding: 0.2rem 0.55rem;
+  border-radius: 3px;
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.loshu-missing {
+  font-size: 0.82rem;
+  color: var(--muted-dim);
+  text-align: center;
+  margin: 0.25rem 0 0;
+}
+
+/* Number Meanings Grid */
+
+.number-meanings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.number-meaning-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid var(--panel-border);
+  border-radius: 4px;
+}
+
+.nm-digit {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--gold);
+  font-weight: 400;
+  line-height: 1;
+  min-width: 1.2rem;
+  text-align: center;
+}
+
+.nm-chinese {
+  font-size: 0.75rem;
+  color: var(--muted);
+  white-space: nowrap;
+  min-width: 4.5rem;
+}
+
+.nm-text {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: var(--muted-dim);
+}
+
+/* Numerology responsive */
+
+@media (max-width: 640px) {
+  .numerology-core-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .number-meanings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .loshu-grid {
+    max-width: 200px;
+  }
+
+  .number-value {
+    font-size: 1.8rem;
+  }
+}
+
+/* ═══════════════════════════════════════════════ */
+/* Qi Men Dun Jia Styles                          */
+/* ═══════════════════════════════════════════════ */
+
+.qmdj-mode-toggle {
+  display: flex;
+  border: 1px solid var(--panel-border);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.qmdj-mode-btn {
+  flex: 1;
+  padding: 0.65rem;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-family: var(--font-body);
+  border-bottom: 2px solid transparent;
+}
+
+.qmdj-mode-btn:hover {
+  color: var(--foreground);
+}
+
+.qmdj-mode-btn--active {
+  background: rgba(180, 136, 46, 0.1);
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+
+/* Palace Grid */
+
+.qmdj-palace-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.qmdj-palace-cell {
+  border: 1px solid var(--panel-border);
+  border-radius: 4px;
+  background: var(--panel-bg);
+  padding: 0.55rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-height: 110px;
+  transition: border-color 0.2s;
+}
+
+.qmdj-palace-cell.is-auspicious {
+  border-color: rgba(126, 168, 126, 0.5);
+  background: rgba(126, 168, 126, 0.04);
+}
+
+.qmdj-palace-cell.is-inauspicious {
+  border-color: rgba(196, 100, 80, 0.35);
+  background: rgba(196, 100, 80, 0.03);
+}
+
+.qmdj-palace-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.68rem;
+  color: var(--muted-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid var(--panel-border);
+  padding-bottom: 0.2rem;
+}
+
+.qmdj-palace-trigram {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--gold);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.qmdj-star-row,
+.qmdj-gate-row,
+.qmdj-stem-row,
+.qmdj-deity-row {
+  font-size: 0.78rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.qmdj-stem-row {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  color: var(--foreground);
+  justify-content: center;
+  gap: 0.15rem;
+}
+
+.qmdj-heaven-stem {
+  color: var(--gold);
+}
+
+.qmdj-stem-divider {
+  color: var(--muted-dim);
+  font-size: 0.7rem;
+}
+
+.qmdj-earth-stem {
+  color: var(--muted);
+}
+
+.qmdj-deity-row {
+  font-size: 0.7rem;
+  color: var(--muted-dim);
+}
+
+.qmdj-muted {
+  color: var(--muted-dim);
+  font-size: 0.7rem;
+}
+
+/* Nature dots */
+
+.qmdj-nature-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.qmdj-nature-dot.is-good {
+  background: #7ea87e;
+}
+
+.qmdj-nature-dot.is-bad {
+  background: #c46450;
+}
+
+.qmdj-nature-dot.is-neutral {
+  background: var(--muted-dim);
+}
+
+/* Formations */
+
+.qmdj-formations-section {
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.qmdj-formations-section h3 {
+  margin: 0 0 0.5rem;
+}
+
+.qmdj-formations-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.qmdj-formation-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+  background: rgba(180, 136, 46, 0.08);
+}
+
+.qmdj-formation-badge.is-auspicious {
+  background: rgba(126, 168, 126, 0.2);
+  color: #7ea87e;
+}
+
+.qmdj-formation-badge.is-inauspicious {
+  background: rgba(196, 100, 80, 0.2);
+  color: #c46450;
+}
+
+/* QMDJ responsive */
+
+@media (max-width: 640px) {
+  .qmdj-palace-grid {
+    gap: 0.3rem;
+  }
+
+  .qmdj-palace-cell {
+    padding: 0.35rem;
+    min-height: 85px;
+  }
+
+  .qmdj-palace-trigram {
+    font-size: 0.85rem;
+  }
+
+  .qmdj-star-row,
+  .qmdj-gate-row,
+  .qmdj-deity-row {
+    font-size: 0.68rem;
+  }
+
+  .qmdj-stem-row {
+    font-size: 0.8rem;
+  }
+}
+
 /* ─── Responsive ──────────────────────────── */
 
 @media (max-width: 640px) {

@@ -6,6 +6,8 @@ const SYSTEMS = [
   { id: "zwds", href: "/ziwei", zh: "紫微斗數", en: "Zi Wei Dou Shu", sub: "Purple Star Astrology" },
   { id: "guanyin", href: "/guanyin", zh: "觀音靈籤", en: "Guan Yin Divination", sub: "Oracle of Compassion" },
   { id: "tarot", href: "/tarot", zh: "塔羅牌", en: "Tarot", sub: "Archetypal Wisdom" },
+  { id: "numerology", href: "/numerology", zh: "數理", en: "Mystic Numbers", sub: "East-West Numerology" },
+  { id: "qmdj", href: "/qmdj", zh: "奇門遁甲", en: "Qi Men Dun Jia", sub: "Strategic Divination" },
 ];
 
 export default function HomePage() {
@@ -61,6 +63,12 @@ export default function HomePage() {
             <p>
               <strong>Zi Wei Dou Shu:</strong> Generate a twelve-palace chart to examine your destiny.
             </p>
+            <p>
+              <strong>Numerology:</strong> Enter your birth date and name for a cross-cultural reading combining Western Pythagorean numerology with the ancient Chinese Lo Shu Grid.
+            </p>
+            <p>
+              <strong>Qi Men Dun Jia:</strong> Generate a nine-palace strategic chart with time-based or year-based modes for directional guidance and timing advice.
+            </p>
           </div>
           <div className="about-block">
             <h3>For Reflection</h3>
@@ -87,6 +95,12 @@ export default function HomePage() {
           </Link>
           <Link href="/tarot" className="btn btn-secondary">
             塔羅 Tarot Reading
+          </Link>
+          <Link href="/numerology" className="btn btn-secondary">
+            數理 Numerology
+          </Link>
+          <Link href="/qmdj" className="btn btn-secondary">
+            奇門 Qi Men Dun Jia
           </Link>
         </div>
       </section>

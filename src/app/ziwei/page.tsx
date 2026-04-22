@@ -1,11 +1,11 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useMemo, useState, useRef } from "react";
 import { calculateZiWei, ZiWeiChart, ZiWeiPalace } from "@/lib/ziwei";
 import {
   copyToClipboard,
   generateZiWeiShareableText,
-  generateZiWeiTextPDF,
+  exportReadingAsPDF,
 } from "@/lib/pdf-export";
 
 type FormState = {
@@ -50,6 +50,7 @@ export default function ZiWeiPage() {
   const [chart, setChart] = useState<ZiWeiChart | null>(null);
   const [error, setError] = useState("");
   const [copySuccess, setCopySuccess] = useState(false);
+  const resultPanelRef = useRef<HTMLElement>(null);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -76,12 +77,11 @@ export default function ZiWeiPage() {
     }
   }
 
-  function handleExportPDF() {
-    if (!chart) return;
+  async function handleExportPDF() {
+    if (!chart || !resultPanelRef.current) return;
     try {
-      const pdf = generateZiWeiTextPDF(chart, form.name.trim() || undefined);
       const fileName = form.name.trim() ? `${form.name.trim()}-ziwei.pdf` : "ziwei-reading.pdf";
-      pdf.save(fileName);
+      await exportReadingAsPDF(resultPanelRef.current, fileName);
     } catch (err) {
       console.error("Zi Wei PDF export failed:", err);
       setCopySuccess(false);
@@ -199,7 +199,7 @@ export default function ZiWeiPage() {
           {error ? <p className="error-msg">{error}</p> : null}
         </form>
 
-        <section className="panel result-panel">
+        <section className="panel result-panel" ref={resultPanelRef}>
           <h2>Chart Reading</h2>
 
           {!chart ? (

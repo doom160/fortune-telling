@@ -2,7 +2,7 @@
 
 import { FormEvent, useMemo, useRef, useState } from "react";
 import { AnnualLuckPillar, BaziChart, calculateBazi } from "@/lib/bazi";
-import { generateTextPDF, generateShareableText, copyToClipboard } from "@/lib/pdf-export";
+import { generateShareableText, copyToClipboard, exportReadingAsPDF } from "@/lib/pdf-export";
 
 type FormState = {
   name: string;
@@ -107,12 +107,11 @@ export default function BaziPage() {
     }
   }
 
-  function handleExportPDF() {
-    if (!chart) return;
+  async function handleExportPDF() {
+    if (!chart || !resultPanelRef.current) return;
     try {
-      const pdf = generateTextPDF(chart, form.name.trim() || undefined);
       const fileName = form.name.trim() ? `${form.name.trim()}-bazi.pdf` : "bazi-reading.pdf";
-      pdf.save(fileName);
+      await exportReadingAsPDF(resultPanelRef.current, fileName);
     } catch (err) {
       console.error("PDF export failed:", err);
       setCopySuccess(false);

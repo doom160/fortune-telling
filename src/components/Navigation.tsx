@@ -45,6 +45,18 @@ export function Navigation() {
           >
             塔羅 Tarot
           </Link>
+          <Link
+            href="/numerology"
+            className={`nav-link ${isActive("/numerology") ? "active" : ""}`}
+          >
+            數理 Numerology
+          </Link>
+          <Link
+            href="/qmdj"
+            className={`nav-link ${isActive("/qmdj") ? "active" : ""}`}
+          >
+            奇門 Qi Men
+          </Link>
         </div>
       </div>
     </nav>
