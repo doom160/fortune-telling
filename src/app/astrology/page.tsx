@@ -1,0 +1,516 @@
+"use client";
+
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { calculateNatalChart, NatalChart } from "@/lib/astrology";
+import { City, searchCities } from "@/lib/cities";
+import { copyToClipboard, exportReadingAsPDF } from "@/lib/pdf-export";
+import { NatalWheelSVG } from "@/components/NatalWheelSVG";
+import { MethodologyModal } from "@/components/MethodologyModal";
+
+type FormState = {
+  name: string;
+  birthDate: string;
+  birthTime: string;
+  cityQuery: string;
+  selectedCity: City | null;
+};
+
+const EMPTY_FORM: FormState = {
+  name: "",
+  birthDate: "",
+  birthTime: "",
+  cityQuery: "",
+  selectedCity: null,
+};
+
+const ASPECT_LABELS: Record<string, string> = {
+  conjunction: "☌ Conjunction",
+  opposition: "☍ Opposition",
+  trine: "△ Trine",
+  square: "□ Square",
+  sextile: "⚹ Sextile",
+};
+
+export default function AstrologyPage() {
+  const [form, setForm] = useState<FormState>(EMPTY_FORM);
+  const [chart, setChart] = useState<NatalChart | null>(null);
+  const [error, setError] = useState("");
+  const [copySuccess, setCopySuccess] = useState(false);
+  const [showMethodology, setShowMethodology] = useState(false);
+  const [cityResults, setCityResults] = useState<City[]>([]);
+  const [showCityDropdown, setShowCityDropdown] = useState(false);
+  const resultPanelRef = useRef<HTMLDivElement>(null);
+  const cityDropdownRef = useRef<HTMLDivElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  const handleCitySearch = useCallback((query: string) => {
+    setForm(prev => ({ ...prev, cityQuery: query, selectedCity: null }));
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (query.length < 2) {
+      setCityResults([]);
+      setShowCityDropdown(false);
+      return;
+    }
+    debounceRef.current = setTimeout(async () => {
+      const results = await searchCities(query);
+      setCityResults(results);
+      setShowCityDropdown(results.length > 0);
+    }, 200);
+  }, []);
+
+  function handleCitySelect(city: City) {
+    setForm(prev => ({ ...prev, cityQuery: `${city.name}, ${city.country}`, selectedCity: city }));
+    setShowCityDropdown(false);
+  }
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (cityDropdownRef.current && !cityDropdownRef.current.contains(e.target as Node)) {
+        setShowCityDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError("");
+
+    if (!form.selectedCity) {
+      setError("Please select a birth city from the dropdown.");
+      return;
+    }
+
+    try {
+      const result = calculateNatalChart({
+        name: form.name.trim() || undefined,
+        birthDate: form.birthDate,
+        birthTime: form.birthTime || undefined,
+        lat: form.selectedCity.lat,
+        lng: form.selectedCity.lng,
+        timeZone: form.selectedCity.tz,
+      });
+      setChart(result);
+    } catch (err) {
+      setChart(null);
+      setError(err instanceof Error ? err.message : "Something went wrong while generating your chart.");
+    }
+  }
+
+  async function handleExportPDF() {
+    if (!chart || !resultPanelRef.current) return;
+    try {
+      const fileName = form.name.trim() ? `${form.name.trim()}-natal-chart.pdf` : "natal-chart.pdf";
+      await exportReadingAsPDF(resultPanelRef.current, fileName);
+    } catch (err) {
+      console.error("PDF export failed:", err);
+    }
+  }
+
+  function handleShareText() {
+    if (!chart) return;
+    const lines: string[] = [];
+    lines.push("═══════════════════════════════════");
+    lines.push("  星盤 Western Astrology — Natal Chart");
+    lines.push("═══════════════════════════════════");
+    if (chart.input.name) lines.push(`Name: ${chart.input.name}`);
+    lines.push(`Birth: ${chart.input.birthDate} ${chart.input.birthTime || "12:00 (noon)"}`);
+    lines.push(`Location: ${form.cityQuery}`);
+    lines.push("");
+
+    const sun = chart.planets.find(p => p.planet === "Sun")!;
+    const moon = chart.planets.find(p => p.planet === "Moon")!;
+    lines.push(`☉ Sun: ${sun.sign} ${sun.degreeInSign}°${sun.minuteInDegree}′`);
+    lines.push(`☽ Moon: ${moon.sign} ${moon.degreeInSign}°${moon.minuteInDegree}′`);
+    if (chart.ascendant !== null) {
+      const asc = Math.floor(chart.ascendant / 30);
+      const signs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
+      lines.push(`ASC: ${signs[asc]}`);
+    }
+    lines.push("");
+
+    for (const section of chart.interpretation.split("\n")) {
+      if (section.startsWith("## ")) {
+        lines.push(`── ${section.slice(3)} ──`);
+      } else {
+        lines.push(section);
+      }
+    }
+
+    lines.push("");
+    lines.push("───────────────────────────────────");
+    lines.push("Generated by 天機 Heavenly Secrets");
+
+    const success = copyToClipboard(lines.join("\n"));
+    if (success) {
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    }
+  }
+
+  return (
+    <main className="page-shell">
+      <section className="hero-panel">
+        <div className="hero-zh">星盤</div>
+        <div className="divider" />
+        <div className="hero-en">Western Astrology</div>
+        <p>
+          Generate your natal chart with planet positions, house placements, aspects, and current transit overlays.
+        </p>
+        <button type="button" className="methodology-trigger" onClick={() => setShowMethodology(true)}>
+          How It Works
+        </button>
+      </section>
+
+      <section className="workspace-grid">
+        <form className="panel" onSubmit={handleSubmit}>
+          <h2>Birth Profile / 出生資料</h2>
+
+          <label>
+            Name / 姓名 (optional)
+            <input
+              type="text"
+              value={form.name}
+              onChange={e => setForm(prev => ({ ...prev, name: e.target.value }))}
+              placeholder="e.g. Mei Ling"
+            />
+          </label>
+
+          <label>
+            Date of Birth / 生日
+            <input
+              type="date"
+              value={form.birthDate}
+              onChange={e => setForm(prev => ({ ...prev, birthDate: e.target.value }))}
+              required
+            />
+          </label>
+
+          <label>
+            Time of Birth / 出生時間 (optional)
+            <input
+              type="time"
+              value={form.birthTime}
+              onChange={e => setForm(prev => ({ ...prev, birthTime: e.target.value }))}
+            />
+            <span className="input-hint">
+              Required for Ascendant, houses, and precise Moon position. Defaults to noon if omitted.
+            </span>
+          </label>
+
+          <div className="city-search-wrapper" ref={cityDropdownRef}>
+            <label>
+              Birth City / 出生城市
+              <input
+                type="text"
+                className="city-search-input"
+                value={form.cityQuery}
+                onChange={e => handleCitySearch(e.target.value)}
+                onFocus={() => { if (cityResults.length > 0) setShowCityDropdown(true); }}
+                placeholder="Start typing a city name..."
+                required
+                autoComplete="off"
+              />
+            </label>
+            {showCityDropdown && cityResults.length > 0 && (
+              <div className="city-dropdown">
+                {cityResults.map((city, i) => (
+                  <button
+                    key={`${city.name}-${city.country}-${i}`}
+                    type="button"
+                    className="city-option"
+                    onClick={() => handleCitySelect(city)}
+                  >
+                    <span className="city-name">{city.name}</span>
+                    <span className="city-country">{city.country}</span>
+                    <span className="city-coords">{city.lat.toFixed(2)}°, {city.lng.toFixed(2)}°</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {error && <p className="form-error">{error}</p>}
+
+          <button type="submit">Generate Natal Chart / 生成星盤</button>
+        </form>
+
+        <section className="panel result-panel" ref={resultPanelRef}>
+          {!chart ? (
+            <p className="placeholder">
+              Submit the form to generate your natal chart and interpretation.
+            </p>
+          ) : (
+            <>
+              <div className="action-bar">
+                <button type="button" onClick={handleExportPDF} className="action-btn export-btn">
+                  ↓ Export PDF
+                </button>
+                <button
+                  type="button"
+                  onClick={handleShareText}
+                  className={`action-btn share-btn ${copySuccess ? "copied" : ""}`}
+                >
+                  {copySuccess ? "✓ Copied to Clipboard" : "⧉ Copy & Share"}
+                </button>
+              </div>
+
+              {/* Natal Wheel */}
+              {chart.hasBirthTime && chart.ascendant !== null && chart.houses.length === 12 && (
+                <div className="natal-wheel-container">
+                  <NatalWheelSVG
+                    planets={chart.planets}
+                    houses={chart.houses}
+                    ascendant={chart.ascendant}
+                    aspects={chart.aspects}
+                    transitPlanets={chart.transitPlanets}
+                    transitAspects={chart.transitAspects}
+                  />
+                </div>
+              )}
+
+              {/* Planet Positions Table */}
+              <div className="astro-section">
+                <h3>Planet Positions / 行星位置</h3>
+                <table className="planet-table">
+                  <thead>
+                    <tr>
+                      <th>Planet</th>
+                      <th>Sign</th>
+                      <th>Degree</th>
+                      {chart.hasBirthTime && <th>House</th>}
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {chart.planets.map(p => (
+                      <tr key={p.planet}>
+                        <td><span className="planet-symbol">{p.symbol}</span> {p.planet}</td>
+                        <td>{p.sign}</td>
+                        <td>{p.degreeInSign}°{p.minuteInDegree}′</td>
+                        {chart.hasBirthTime && <td>{p.house > 0 ? p.house : "—"}</td>}
+                        <td>{p.retrograde ? <span className="retrograde-badge">℞</span> : ""}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* House Cusps */}
+              {chart.hasBirthTime && chart.houses.length === 12 && (
+                <div className="astro-section">
+                  <h3>House Cusps / 宮位</h3>
+                  <table className="house-table">
+                    <thead>
+                      <tr><th>House</th><th>Cusp Sign</th><th>Degree</th></tr>
+                    </thead>
+                    <tbody>
+                      {chart.houses.map((cusp, i) => {
+                        const signIdx = Math.floor(cusp / 30) % 12;
+                        const deg = cusp % 30;
+                        const signs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
+                        const label = i === 0 ? "1 (ASC)" : i === 9 ? "10 (MC)" : String(i + 1);
+                        return (
+                          <tr key={i}>
+                            <td>{label}</td>
+                            <td>{signs[signIdx]}</td>
+                            <td>{Math.floor(deg)}°{Math.round((deg % 1) * 60)}′</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {/* Aspects */}
+              {chart.aspects.length > 0 && (
+                <div className="astro-section">
+                  <h3>Aspects / 相位</h3>
+                  <div className="aspect-grid">
+                    {chart.aspects.slice(0, 15).map((a, i) => (
+                      <div key={i} className={`aspect-chip aspect-${a.type}`}>
+                        <span className="aspect-planets">{a.planet1} — {a.planet2}</span>
+                        <span className="aspect-type">{ASPECT_LABELS[a.type] || a.type}</span>
+                        <span className="aspect-orb">{a.orb}°</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Transit Aspects */}
+              {chart.transitAspects.length > 0 && (
+                <div className="astro-section transit-section">
+                  <h3>Current Transits / 當前行運</h3>
+                  <div className="aspect-grid">
+                    {chart.transitAspects.slice(0, 10).map((ta, i) => (
+                      <div key={i} className={`aspect-chip aspect-${ta.type} transit-chip`}>
+                        <span className="aspect-planets">Tr. {ta.transitPlanet} → {ta.natalPlanet}</span>
+                        <span className="aspect-type">{ASPECT_LABELS[ta.type] || ta.type}</span>
+                        <span className="aspect-orb">{ta.orb}°</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* No birth time note */}
+              {!chart.hasBirthTime && (
+                <div className="note-box" style={{ margin: "1rem 0" }}>
+                  <strong>Note:</strong> Without an exact birth time, the Ascendant, house cusps, and precise Moon position
+                  cannot be determined. The natal wheel, house placements, and house-related interpretations are omitted.
+                </div>
+              )}
+
+              {/* Interpretation */}
+              <ReadingSections text={chart.interpretation} />
+
+              {/* Disclaimer */}
+              <div className="note-box" style={{ marginTop: "1.5rem" }}>
+                <strong>Note:</strong> This reading is generated for self-reflection and personal growth.
+                Planet positions are calculated astronomically and may differ slightly from ephemeris tables
+                due to precession model differences.
+              </div>
+            </>
+          )}
+        </section>
+      </section>
+
+      <MethodologyModal isOpen={showMethodology} onClose={() => setShowMethodology(false)} title="How Western Astrology Works / 西洋占星計算原理">
+        <h3>Overview</h3>
+        <p>
+          Western astrology maps the positions of celestial bodies at your exact moment of birth onto a circular
+          chart divided into 12 zodiac signs and 12 houses. The interplay of planets, signs, houses, and aspects
+          reveals personality traits, life themes, and timing of events.
+        </p>
+
+        <h3>The Zodiac Signs</h3>
+        <p>
+          The ecliptic (the Sun&apos;s apparent annual path) is divided into 12 equal segments of 30° each, starting
+          from the Vernal Equinox (0° Aries). Each sign carries elemental (Fire, Earth, Air, Water) and modal
+          (Cardinal, Fixed, Mutable) qualities that color the expression of any planet placed within it.
+        </p>
+
+        <h3>Planet Positions</h3>
+        <p>
+          This application calculates <strong>geocentric ecliptic longitude</strong> — the position of each planet
+          as seen from Earth projected onto the ecliptic. The Sun&apos;s position determines your Sun sign, the
+          Moon&apos;s position your Moon sign, and so on for all planets through Pluto.
+        </p>
+        <p>
+          <strong>Retrograde motion</strong> occurs when a planet appears to move backward through the zodiac from
+          Earth&apos;s perspective. This is detected by comparing the planet&apos;s longitude over consecutive days.
+        </p>
+
+        <h3>The Ascendant (Rising Sign)</h3>
+        <p>
+          The Ascendant is the zodiac degree rising on the eastern horizon at your birth moment and location. It
+          requires an exact birth time and geographic coordinates. Calculated using Local Apparent Sidereal Time
+          (LAST) derived from Greenwich Mean Sidereal Time plus longitude, combined with the obliquity of the
+          ecliptic and geographic latitude via the formula:
+        </p>
+        <p>
+          ASC = arctan(-cos(RAMC) / (sin(RAMC) × cos(ε) + tan(φ) × sin(ε)))
+        </p>
+        <p>
+          where RAMC is the Right Ascension of the Midheaven, ε is the obliquity, and φ is the latitude.
+        </p>
+
+        <h3>The Placidus House System</h3>
+        <p>
+          Houses divide the chart into 12 sectors representing different life areas. The Placidus system, the most
+          widely used in modern Western astrology, calculates intermediate house cusps by dividing the semi-diurnal
+          and semi-nocturnal arcs into equal time segments. Each cusp is found through iterative computation using
+          the planet&apos;s declination and the observer&apos;s latitude.
+        </p>
+        <p>
+          At extreme latitudes (above ~66.5°), Placidus calculations become degenerate and this application
+          falls back to the Equal House system (each house = 30° from the Ascendant).
+        </p>
+
+        <h3>Aspects</h3>
+        <p>
+          Aspects are angular relationships between planets. The five major aspects used here are:
+        </p>
+        <table>
+          <thead>
+            <tr><th>Aspect</th><th>Angle</th><th>Nature</th><th>Orb</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Conjunction ☌</td><td>0°</td><td>Intensifying</td><td>8-10°</td></tr>
+            <tr><td>Opposition ☍</td><td>180°</td><td>Polarizing</td><td>8-10°</td></tr>
+            <tr><td>Trine △</td><td>120°</td><td>Harmonious</td><td>8°</td></tr>
+            <tr><td>Square □</td><td>90°</td><td>Challenging</td><td>8°</td></tr>
+            <tr><td>Sextile ⚹</td><td>60°</td><td>Supportive</td><td>6°</td></tr>
+          </tbody>
+        </table>
+        <p>
+          The <strong>orb</strong> is the allowed deviation from the exact angle. Tighter orbs indicate stronger
+          aspect influence. Luminaries (Sun and Moon) receive wider orbs due to their significance.
+        </p>
+
+        <h3>Transits</h3>
+        <p>
+          Transits show where the planets are <em>right now</em> relative to your natal chart. When a transiting
+          planet forms an aspect to a natal planet, it activates that natal energy. Slow-moving planets (Jupiter
+          through Pluto) create the most significant transits, sometimes lasting months or years.
+        </p>
+
+        <div className="note-box">
+          <strong>Note:</strong> All astronomical calculations use the astronomy-engine library for high-precision
+          geocentric positions. The obliquity of the ecliptic is computed via the IAU/Laskar formula.
+        </div>
+      </MethodologyModal>
+    </main>
+  );
+}
+
+// ─── Helper Components ───────────────────────────────────────────────────────
+
+function ReadingSections({ text }: { text: string }) {
+  const lines = text.split("\n");
+  const sections: { title: string; body: string[] }[] = [];
+  let current: { title: string; body: string[] } | null = null;
+
+  for (const line of lines) {
+    if (line.startsWith("## ")) {
+      if (current) sections.push(current);
+      current = { title: line.slice(3), body: [] };
+    } else if (current) {
+      current.body.push(line);
+    }
+  }
+  if (current) sections.push(current);
+
+  return (
+    <div className="reading-sections">
+      {sections.map((s, i) => (
+        <details key={i} className="reading-section" open={i < 3}>
+          <summary>{s.title}</summary>
+          <div className="section-body">
+            {s.body.map((line, j) => {
+              if (!line.trim()) return <br key={j} />;
+              if (line.startsWith("**") && line.endsWith("**")) {
+                return <p key={j}><strong>{line.slice(2, -2)}</strong></p>;
+              }
+              // Handle inline bold
+              const parts = line.split(/(\*\*[^*]+\*\*)/g);
+              return (
+                <p key={j}>
+                  {parts.map((part, k) =>
+                    part.startsWith("**") && part.endsWith("**")
+                      ? <strong key={k}>{part.slice(2, -2)}</strong>
+                      : part
+                  )}
+                </p>
+              );
+            })}
+          </div>
+        </details>
+      ))}
+    </div>
+  );
+}

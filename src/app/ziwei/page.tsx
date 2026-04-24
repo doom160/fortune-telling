@@ -7,6 +7,7 @@ import {
   generateZiWeiShareableText,
   exportReadingAsPDF,
 } from "@/lib/pdf-export";
+import { MethodologyModal } from "@/components/MethodologyModal";
 
 type FormState = {
   name: string;
@@ -50,6 +51,7 @@ export default function ZiWeiPage() {
   const [chart, setChart] = useState<ZiWeiChart | null>(null);
   const [error, setError] = useState("");
   const [copySuccess, setCopySuccess] = useState(false);
+  const [showMethodology, setShowMethodology] = useState(false);
   const resultPanelRef = useRef<HTMLElement>(null);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -108,6 +110,9 @@ export default function ZiWeiPage() {
           Generate a 12-palace chart from your birth moment and review a guided
           interpretation of life palace, career, wealth, relationships, and inner wellbeing.
         </p>
+        <button type="button" className="methodology-trigger" onClick={() => setShowMethodology(true)}>
+          How It Works
+        </button>
       </section>
 
       <section className="workspace-grid">
@@ -210,14 +215,14 @@ export default function ZiWeiPage() {
             <>
               <div className="action-bar">
                 <button type="button" onClick={handleExportPDF} className="action-btn export-btn">
-                  📥 Export PDF
+                  ↓ Export PDF
                 </button>
                 <button
                   type="button"
                   onClick={handleShareText}
                   className={`action-btn share-btn ${copySuccess ? "copied" : ""}`}
                 >
-                  {copySuccess ? "✓ Copied to Clipboard" : "📋 Copy & Share"}
+                  {copySuccess ? "✓ Copied to Clipboard" : "⧉ Copy & Share"}
                 </button>
               </div>
 
@@ -254,6 +259,90 @@ export default function ZiWeiPage() {
           )}
         </section>
       </section>
+
+      <MethodologyModal isOpen={showMethodology} onClose={() => setShowMethodology(false)} title="How Zi Wei Dou Shu Works / 紫微斗數計算原理">
+        <h3>Overview</h3>
+        <p>
+          Zi Wei Dou Shu (紫微斗數), or Purple Star Astrology, is one of China&apos;s most revered astrological systems.
+          It constructs a 12-palace chart based on your birth date and time, mapping over 100 stars into different
+          life domains to reveal your destiny patterns.
+        </p>
+
+        <h3>The Twelve Palaces / 十二宮</h3>
+        <p>
+          The chart is arranged into 12 palaces, each governing a specific life domain:
+        </p>
+        <ul>
+          <li><strong>命宮 (Life Palace):</strong> Core personality, character, and overall destiny</li>
+          <li><strong>兄弟宮 (Siblings):</strong> Relationships with siblings and peers</li>
+          <li><strong>夫妻宮 (Spouse):</strong> Marriage, partnerships, romantic relationships</li>
+          <li><strong>子女宮 (Children):</strong> Relationship with children, fertility</li>
+          <li><strong>財帛宮 (Wealth):</strong> Financial capacity and earning patterns</li>
+          <li><strong>疾厄宮 (Health):</strong> Physical constitution and health risks</li>
+          <li><strong>遷移宮 (Travel):</strong> Opportunities abroad, social image outside home</li>
+          <li><strong>交友宮 (Friends):</strong> Social connections, subordinates</li>
+          <li><strong>官祿宮 (Career):</strong> Professional path and achievements</li>
+          <li><strong>田宅宮 (Property):</strong> Real estate, living environment, family heritage</li>
+          <li><strong>福德宮 (Fortune):</strong> Mental wellbeing, spiritual life, inner happiness</li>
+          <li><strong>父母宮 (Parents):</strong> Relationship with parents, upbringing</li>
+        </ul>
+
+        <h3>Star Placement / 安星法</h3>
+        <h4>Step 1: Determine the Life Palace Position</h4>
+        <p>
+          Using the lunar birth month and the Chinese double-hour (時辰) of birth, the Life Palace position is
+          calculated. All other palaces are then arranged sequentially counter-clockwise around the 12 positions.
+        </p>
+        <h4>Step 2: Calculate the Five Elements Bureau / 五行局</h4>
+        <p>
+          The combination of the Life Palace position and the Heavenly Stem of your birth year determines your
+          Five Elements Bureau (水二局, 木三局, 金四局, 土五局, or 火六局). This number is critical for placing
+          the Purple Star (紫微星).
+        </p>
+        <h4>Step 3: Place the Major Stars</h4>
+        <p>
+          The Purple Star (紫微) is placed based on your lunar birth day and Five Elements Bureau number.
+          The other 13 main stars are then positioned relative to Purple Star or independently using set formulas.
+          Major stars include:
+        </p>
+        <ul>
+          <li><strong>紫微星群:</strong> 紫微, 天機, 太陽, 武曲, 天同, 廉貞</li>
+          <li><strong>天府星群:</strong> 天府, 太陰, 貪狼, 巨門, 天相, 天梁, 七殺, 破軍</li>
+        </ul>
+
+        <h4>Step 4: Place Minor &amp; Auxiliary Stars</h4>
+        <p>
+          Over 30 minor stars (including 文昌, 文曲, 左輔, 右弼, 天魁, 天鉞, 擎羊, 陀羅, 火星, 鈴星)
+          are placed using various formulas based on year stem, year branch, birth month, and birth hour.
+        </p>
+
+        <h3>Star Brightness / 星曜亮度</h3>
+        <p>
+          Each major star has varying brightness levels depending on which palace it occupies: 廟 (Temple/Brightest),
+          旺 (Prosperous), 得地 (Favorable), 利 (Beneficial), 平 (Neutral), 不得地 (Unfavorable), 落陷 (Fallen/Weakest).
+          Brightness determines how effectively a star expresses its energy.
+        </p>
+
+        <h3>Four Transformations / 四化</h3>
+        <p>
+          Based on the year Heavenly Stem, four special transformations are applied to four specific stars:
+        </p>
+        <ul>
+          <li><strong>化祿 (Hua Lu):</strong> Enhancement of wealth and opportunity</li>
+          <li><strong>化權 (Hua Quan):</strong> Enhancement of authority and power</li>
+          <li><strong>化科 (Hua Ke):</strong> Enhancement of fame and scholarly recognition</li>
+          <li><strong>化忌 (Hua Ji):</strong> Obstruction, challenges, karmic lessons</li>
+        </ul>
+        <p>
+          The palace containing 化忌 often indicates an area of life requiring extra attention and growth.
+        </p>
+
+        <div className="note-box">
+          <strong>Note:</strong> This application converts your solar (Gregorian) birth date to the Chinese
+          lunar calendar for all calculations, and supports True Solar Time adjustment for more precise
+          hour pillar determination when longitude is provided.
+        </div>
+      </MethodologyModal>
     </main>
   );
 }

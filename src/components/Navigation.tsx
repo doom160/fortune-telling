@@ -2,61 +2,75 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+
+const NAV_ITEMS = [
+  { href: "/", label: "Home" },
+  { href: "/bazi", label: "八字 BaZi" },
+  { href: "/ziwei", label: "紫微 Zi Wei" },
+  { href: "/guanyin", label: "觀音 Guanyin" },
+  { href: "/tarot", label: "塔羅 Tarot" },
+  { href: "/numerology", label: "數理 Numerology" },
+  { href: "/qmdj", label: "奇門 Qi Men" },
+  { href: "/astrology", label: "星盤 Astrology" },
+  { href: "/faq", label: "常問 FAQ" },
+];
 
 export function Navigation() {
   const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
 
-  const isActive = (path: string): boolean => pathname === path;
+  // Close on route change
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  // Close on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    if (open) {
+      document.addEventListener("mousedown", handleClick);
+    }
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [open]);
+
+  const activeLabel = NAV_ITEMS.find(item => item.href === pathname)?.label || "Menu";
 
   return (
-    <nav className="main-nav">
+    <nav className="main-nav" ref={navRef}>
       <div className="nav-container">
         <Link href="/" className="nav-logo">
-          天機 · Mystic Matrix
+          天機 Heavenly Secrets
         </Link>
-        <div className="nav-links">
-          <Link
-            href="/"
-            className={`nav-link ${isActive("/") ? "active" : ""}`}
+        <div className="nav-dropdown-wrapper">
+          <button
+            type="button"
+            className="nav-toggle"
+            onClick={() => setOpen(prev => !prev)}
+            aria-expanded={open}
+            aria-label="Navigation menu"
           >
-            Home
-          </Link>
-          <Link
-            href="/bazi"
-            className={`nav-link ${isActive("/bazi") ? "active" : ""}`}
-          >
-            八字 BaZi
-          </Link>
-          <Link
-            href="/ziwei"
-            className={`nav-link ${isActive("/ziwei") ? "active" : ""}`}
-          >
-            紫微 Zi Wei
-          </Link>
-          <Link
-            href="/guanyin"
-            className={`nav-link ${isActive("/guanyin") ? "active" : ""}`}
-          >
-            觀音 Guanyin
-          </Link>
-          <Link
-            href="/tarot"
-            className={`nav-link ${isActive("/tarot") ? "active" : ""}`}
-          >
-            塔羅 Tarot
-          </Link>
-          <Link
-            href="/numerology"
-            className={`nav-link ${isActive("/numerology") ? "active" : ""}`}
-          >
-            數理 Numerology
-          </Link>
-          <Link
-            href="/qmdj"
-            className={`nav-link ${isActive("/qmdj") ? "active" : ""}`}
-          >
-            奇門 Qi Men
-          </Link>
+            <span className="nav-toggle-label">{activeLabel}</span>
+            <span className={`nav-toggle-arrow ${open ? "open" : ""}`}>&#x25BE;</span>
+          </button>
+          {open && (
+            <div className="nav-dropdown">
+              {NAV_ITEMS.map(item => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`nav-link ${pathname === item.href ? "active" : ""}`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </nav>

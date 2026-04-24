@@ -3,6 +3,7 @@
 import { FormEvent, useMemo, useRef, useState } from "react";
 import { AnnualLuckPillar, BaziChart, calculateBazi } from "@/lib/bazi";
 import { generateShareableText, copyToClipboard, exportReadingAsPDF } from "@/lib/pdf-export";
+import { MethodologyModal } from "@/components/MethodologyModal";
 
 type FormState = {
   name: string;
@@ -58,6 +59,7 @@ export default function BaziPage() {
   const [chart, setChart] = useState<BaziChart | null>(null);
   const [error, setError] = useState<string>("");
   const [copySuccess, setCopySuccess] = useState<boolean>(false);
+  const [showMethodology, setShowMethodology] = useState(false);
   const resultPanelRef = useRef<HTMLDivElement>(null);
 
   const elementRows = useMemo(() => {
@@ -137,6 +139,9 @@ export default function BaziPage() {
         <p>
           Enter birth details to generate your Four Pillars, element balance, hidden stems, and life luck cycles.
         </p>
+        <button type="button" className="methodology-trigger" onClick={() => setShowMethodology(true)}>
+          How It Works
+        </button>
       </section>
 
       <section className="workspace-grid">
@@ -217,14 +222,14 @@ export default function BaziPage() {
             <>
               <div className="action-bar">
                 <button type="button" onClick={handleExportPDF} className="action-btn export-btn">
-                  📥 Export PDF
+                  ↓ Export PDF
                 </button>
                 <button
                   type="button"
                   onClick={handleShareText}
                   className={`action-btn share-btn ${copySuccess ? "copied" : ""}`}
                 >
-                  {copySuccess ? "✓ Copied to Clipboard" : "📋 Copy & Share"}
+                  {copySuccess ? "✓ Copied to Clipboard" : "⧉ Copy & Share"}
                 </button>
               </div>
 
@@ -400,6 +405,86 @@ export default function BaziPage() {
           )}
         </section>
       </section>
+
+      <MethodologyModal isOpen={showMethodology} onClose={() => setShowMethodology(false)} title="How BaZi Works / 八字計算原理">
+        <h3>Overview</h3>
+        <p>
+          BaZi (八字), or the Four Pillars of Destiny, is a Chinese metaphysical system that maps your birth moment
+          into four pairs of Heavenly Stems and Earthly Branches — one each for the year, month, day, and hour.
+          These eight characters (八字) encode your elemental constitution and life trajectory.
+        </p>
+
+        <h3>The Sexagenary Cycle / 六十甲子</h3>
+        <p>
+          Chinese time-keeping uses a 60-unit cycle formed by pairing 10 Heavenly Stems (天干: 甲乙丙丁戊己庚辛壬癸)
+          with 12 Earthly Branches (地支: 子丑寅卯辰巳午未申酉戌亥). Each stem and branch carries a Five Element
+          (五行) attribute: Wood, Fire, Earth, Metal, or Water.
+        </p>
+
+        <h3>How the Four Pillars Are Built</h3>
+        <h4>Year Pillar / 年柱</h4>
+        <p>
+          Determined by the Chinese solar year, which begins at the <strong>Start of Spring (立春)</strong>, not
+          January 1 or Lunar New Year. The year&apos;s position in the sexagenary cycle gives its stem-branch pair.
+        </p>
+        <h4>Month Pillar / 月柱</h4>
+        <p>
+          Based on <strong>solar terms (節氣)</strong>. Each Chinese month starts at a specific solar longitude
+          (e.g., 立春 at 315°, 驚蟄 at 345°). The month branch follows this astronomical boundary, and the month
+          stem is derived from the year stem using the Five Tiger Escape formula (五虎遁).
+        </p>
+        <h4>Day Pillar / 日柱</h4>
+        <p>
+          Calculated from a continuous count since a reference epoch (e.g., January 1, year 1 CE). The day&apos;s
+          position in the 60-cycle determines its stem-branch pair. This is the most important pillar as it
+          represents your <strong>Day Master (日主)</strong> — your core self.
+        </p>
+        <h4>Hour Pillar / 時柱</h4>
+        <p>
+          Chinese hours are two-hour blocks (時辰) mapped to the 12 branches. 子時 is 23:00–01:00.
+          The hour stem is derived from the day stem using the Five Rat Escape formula (五鼠遁).
+        </p>
+
+        <h3>Five Elements / 五行</h3>
+        <p>
+          Each stem and branch belongs to one of the Five Elements. The chart tallies all elements to produce an
+          element balance profile. Key relationships include:
+        </p>
+        <ul>
+          <li><strong>Generating cycle (相生):</strong> Wood → Fire → Earth → Metal → Water → Wood</li>
+          <li><strong>Controlling cycle (相剋):</strong> Wood → Earth → Water → Fire → Metal → Wood</li>
+        </ul>
+        <p>
+          The balance (or imbalance) of elements in your chart reveals your strengths, weaknesses, and
+          the types of energy you need more or less of.
+        </p>
+
+        <h3>Hidden Stems / 藏干</h3>
+        <p>
+          Each Earthly Branch contains one to three hidden Heavenly Stems. These represent deeper, latent qualities
+          that influence your chart beyond the surface level. For example, 辰 (Dragon) contains 戊 (Earth),
+          乙 (Wood), and 癸 (Water).
+        </p>
+
+        <h3>Day Master Analysis / 日主分析</h3>
+        <p>
+          Your Day Stem is your Day Master — the element that represents <em>you</em>. The strength of your Day
+          Master depends on seasonal support, element counts, and the presence of helpful or draining elements.
+          A strong Day Master can handle pressure; a weak one benefits from support.
+        </p>
+
+        <h3>Luck Periods / 大運</h3>
+        <p>
+          Life is divided into 10-year luck periods (大運) derived from the month pillar. The direction of progression
+          (forward or backward through the sexagenary cycle) depends on the gender and the yin/yang polarity of the
+          year stem. Each luck period overlays new elemental influences onto your natal chart.
+        </p>
+
+        <div className="note-box">
+          <strong>Note:</strong> This application uses astronomical solar term calculations (via the astronomy-engine library)
+          for precise month boundaries, matching the accuracy of professional BaZi software.
+        </div>
+      </MethodologyModal>
     </main>
   );
 }

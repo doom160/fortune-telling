@@ -1,23 +1,50 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Stars, Orbs } from "@/components/Stars";
 
+export const metadata: Metadata = {
+  title: "天機 Heavenly Secrets — Ancient Arts of Divination",
+  description:
+    "Explore seven divination systems: BaZi, Zi Wei Dou Shu, Qi Men Dun Jia, Western Astrology, Tarot, Guanyin Lots, and Numerology. Free, private, browser-based readings with detailed interpretations.",
+  openGraph: {
+    title: "天機 Heavenly Secrets — Ancient Arts of Divination",
+    description:
+      "Free online divination tools spanning Chinese and Western traditions. BaZi, Zi Wei Dou Shu, Astrology, Tarot, Numerology, and more — all private and browser-based.",
+  },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "天機 Heavenly Secrets",
+  url: "https://heavenly-secrets.app",
+  description:
+    "A collection of traditional divination and metaphysical tools including BaZi, Zi Wei Dou Shu, Qi Men Dun Jia, Western Astrology, Tarot, Guanyin Lots, and Numerology.",
+  inLanguage: ["en", "zh-Hant"],
+};
+
 const SYSTEMS = [
-  { id: "bazi", href: "/bazi", zh: "八字", en: "Bazi", sub: "Four Pillars of Destiny" },
-  { id: "zwds", href: "/ziwei", zh: "紫微斗數", en: "Zi Wei Dou Shu", sub: "Purple Star Astrology" },
-  { id: "guanyin", href: "/guanyin", zh: "觀音靈籤", en: "Guan Yin Divination", sub: "Oracle of Compassion" },
-  { id: "tarot", href: "/tarot", zh: "塔羅牌", en: "Tarot", sub: "Archetypal Wisdom" },
-  { id: "numerology", href: "/numerology", zh: "數理", en: "Mystic Numbers", sub: "East-West Numerology" },
-  { id: "qmdj", href: "/qmdj", zh: "奇門遁甲", en: "Qi Men Dun Jia", sub: "Strategic Divination" },
+  { id: "bazi", href: "/bazi", zh: "八字", en: "Bazi", sub: "Four Pillars of Destiny", tags: ["Chinese", "Forecast"] },
+  { id: "zwds", href: "/ziwei", zh: "紫微斗數", en: "Zi Wei Dou Shu", sub: "Purple Star Astrology", tags: ["Chinese", "Forecast"] },
+  { id: "guanyin", href: "/guanyin", zh: "觀音靈籤", en: "Guan Yin Divination", sub: "Oracle of Compassion", tags: ["Chinese", "Guidance"] },
+  { id: "tarot", href: "/tarot", zh: "塔羅牌", en: "Tarot", sub: "Archetypal Wisdom", tags: ["Western", "Guidance"] },
+  { id: "numerology", href: "/numerology", zh: "數理", en: "Mystic Numbers", sub: "East-West Numerology", tags: ["East-West", "Personality"] },
+  { id: "qmdj", href: "/qmdj", zh: "奇門遁甲", en: "Qi Men Dun Jia", sub: "Strategic Divination", tags: ["Chinese", "Strategy"] },
+  { id: "astrology", href: "/astrology", zh: "星盤", en: "Western Astrology", sub: "Natal Chart & Transits", tags: ["Western", "Forecast"] },
 ];
 
 export default function HomePage() {
   return (
     <main className="home-page">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <section className="hero-banner">
         <Orbs />
         <Stars />
         <div className="hero-content">
-          <p className="tagline-zh">天機 · Mystic Matrix</p>
+          <p className="tagline-zh">天機 Heavenly Secrets</p>
           <div className="divider" />
           <h1>The Ancient Arts<br />of Divination</h1>
           <p className="subtitle">
@@ -29,6 +56,11 @@ export default function HomePage() {
             <Link key={s.id} href={s.href} className="system-card">
               <div className="corner corner-tl" />
               <div className="corner corner-br" />
+              <div className="card-tags">
+                {s.tags.map(tag => (
+                  <span key={tag} className="card-tag">{tag}</span>
+                ))}
+              </div>
               <div className="card-zh">{s.zh}</div>
               <div className="card-en">{s.en}</div>
               <div className="card-sub">{s.sub}</div>
@@ -43,7 +75,7 @@ export default function HomePage() {
           <div className="about-block">
             <h3>Authentic Practices</h3>
             <p>
-              Mystic Matrix combines traditional metaphysical practices with modern convenience.
+              天機 Heavenly Secrets combines traditional metaphysical practices with modern convenience.
               Whether you&apos;re drawn to the structured depth of BaZi or the intuitive guidance of Tarot,
               each tool offers a unique pathway to self-discovery.
             </p>
@@ -68,6 +100,9 @@ export default function HomePage() {
             </p>
             <p>
               <strong>Qi Men Dun Jia:</strong> Generate a nine-palace strategic chart with time-based or year-based modes for directional guidance and timing advice.
+            </p>
+            <p>
+              <strong>Western Astrology:</strong> Enter your birth details and location to generate a natal chart with planet positions, house placements, aspects, and current transit overlays.
             </p>
           </div>
           <div className="about-block">
@@ -101,6 +136,9 @@ export default function HomePage() {
           </Link>
           <Link href="/qmdj" className="btn btn-secondary">
             奇門 Qi Men Dun Jia
+          </Link>
+          <Link href="/astrology" className="btn btn-secondary">
+            星盤 Western Astrology
           </Link>
         </div>
       </section>
