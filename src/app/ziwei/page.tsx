@@ -2,6 +2,7 @@
 
 import { FormEvent, useMemo, useState, useRef } from "react";
 import { calculateZiWei, ZiWeiChart, ZiWeiPalace } from "@/lib/ziwei";
+import type { Star } from "@ziweijs/core";
 import {
   copyToClipboard,
   generateZiWeiShareableText,
@@ -240,14 +241,16 @@ export default function ZiWeiPage() {
                 />
               </div>
 
-              <div className="ziwei-interpretation">
-                <h3>Interpretation</h3>
-                <ReadingSections lines={chart.interpretation} />
-              </div>
-
               <div className="ziwei-palace-section">
                 <h3>Twelve Palaces</h3>
                 <TraditionalPalaceGrid palaces={chart.palaces} />
+              </div>
+
+              <ZiWeiLegend />
+
+              <div className="ziwei-interpretation">
+                <h3>Interpretation</h3>
+                <ReadingSections lines={chart.interpretation} />
               </div>
 
               <div className="note-box">
@@ -441,24 +444,32 @@ function TraditionalPalaceGrid({ palaces }: { palaces: ZiWeiPalace[] }) {
                     <p className="ziwei-palace-name">{palace.name}</p>
                     <p className="ziwei-palace-branch">{palace.stem}{palace.branch}</p>
                   </div>
-                  {palace.isLaiYin ? <span className="ziwei-badge">Lai Yin</span> : null}
+                  {palace.isLaiYin ? (
+                    <span className="ziwei-badge" title="來因宮 — the palace whose Heavenly Stem matches the birth year stem. It reveals the root motivation and karmic origin of this life.">
+                      來因
+                    </span>
+                  ) : null}
                 </div>
                 <p className="ziwei-palace-range">Ages {palace.horoscopeRanges[0]}-{palace.horoscopeRanges[1]}</p>
                 <div className="ziwei-stars-block">
                   <p className="ziwei-stars-label">Major Stars</p>
-                  <p className="ziwei-stars-text">
+                  <div className="ziwei-stars-list">
                     {palace.majorStars.length > 0
-                      ? palace.majorStars.map((star) => star.name).join(" · ")
-                      : "None listed"}
-                  </p>
+                      ? palace.majorStars.map((star) => (
+                          <StarChip key={star.key} star={star} />
+                        ))
+                      : <span className="ziwei-stars-text">—</span>}
+                  </div>
                 </div>
                 <div className="ziwei-stars-block">
                   <p className="ziwei-stars-label">Minor Stars</p>
-                  <p className="ziwei-stars-text ziwei-stars-secondary">
+                  <div className="ziwei-stars-list">
                     {palace.minorStars.length > 0
-                      ? palace.minorStars.map((star) => star.name).join(" · ")
-                      : "None listed"}
-                  </p>
+                      ? palace.minorStars.map((star) => (
+                          <StarChip key={star.key} star={star} />
+                        ))
+                      : <span className="ziwei-stars-text ziwei-stars-secondary">—</span>}
+                  </div>
                 </div>
               </>
             ) : (
@@ -469,6 +480,169 @@ function TraditionalPalaceGrid({ palaces }: { palaces: ZiWeiPalace[] }) {
           </article>
         );
       })}
+    </div>
+  );
+}
+
+const TRANSFORMATION_COLORS: Record<string, string> = {
+  化祿: "var(--hua-lu, #4ade80)",
+  化權: "var(--hua-quan, #f59e0b)",
+  化科: "var(--hua-ke, #60a5fa)",
+  化忌: "var(--hua-ji, #f87171)",
+};
+
+const STAR_ENGLISH: Record<string, { en: string; meaning: string }> = {
+  紫微: { en: "Purple Star", meaning: "Emperor — leadership, authority, central purpose" },
+  天機: { en: "Heavenly Secret", meaning: "Strategist — adaptability, intellect, planning" },
+  太陽: { en: "Sun", meaning: "Radiance — visibility, generosity, public image" },
+  武曲: { en: "Military Melody", meaning: "Commander — discipline, finance, determination" },
+  天同: { en: "Heavenly Unity", meaning: "Harmonizer — kindness, ease, emotional warmth" },
+  廉貞: { en: "Integrity", meaning: "Magistrate — intensity, passion, moral conviction" },
+  天府: { en: "Heavenly Treasury", meaning: "Steward — stability, resources, protection" },
+  太陰: { en: "Moon", meaning: "Intuition — sensitivity, inner depth, refinement" },
+  貪狼: { en: "Greedy Wolf", meaning: "Desire — ambition, magnetism, appetite for life" },
+  巨門: { en: "Giant Gate", meaning: "Analyst — speech, truth-telling, research" },
+  天相: { en: "Heavenly Minister", meaning: "Diplomat — balance, service, aesthetics" },
+  天梁: { en: "Heavenly Beam", meaning: "Mentor — wisdom, protection, moral guidance" },
+  七殺: { en: "Seven Killings", meaning: "Warrior — boldness, decisiveness, breakthrough" },
+  破軍: { en: "Army Breaker", meaning: "Destroyer — reinvention, disruption, transformation" },
+  文昌: { en: "Literary Star", meaning: "Scholar — study, communication, written expression" },
+  文曲: { en: "Literary Melody", meaning: "Artist — creativity, persuasion, emotional expression" },
+  左輔: { en: "Left Assistant", meaning: "Helper — practical support, reliable collaboration" },
+  右弼: { en: "Right Assistant", meaning: "Ally — timely support, graceful assistance" },
+  天魁: { en: "Heavenly Chief", meaning: "Noble — benefactors from above, daytime luck" },
+  天鉞: { en: "Heavenly Halberd", meaning: "Noble — benefactors from below, nighttime luck" },
+  擎羊: { en: "Ram", meaning: "Challenger — friction, obstacles driving growth" },
+  陀羅: { en: "Spinning Top", meaning: "Entanglement — delays, persistence through difficulty" },
+  火星: { en: "Fire Star", meaning: "Impulse — sudden action, explosive energy" },
+  鈴星: { en: "Bell Star", meaning: "Pressure — hidden tension, slow-burning intensity" },
+  地空: { en: "Earthly Void", meaning: "Emptiness — spiritual insight through material loss" },
+  地劫: { en: "Earthly Robbery", meaning: "Disruption — unexpected loss prompting renewal" },
+  天馬: { en: "Heavenly Horse", meaning: "Movement — travel, change, career mobility" },
+  祿存: { en: "Salary Star", meaning: "Wealth — steady income, conservative prosperity" },
+  天空: { en: "Sky Void", meaning: "Detachment — idealism, unconventional thinking" },
+  天刑: { en: "Heavenly Punishment", meaning: "Discipline — law, surgery, strict boundaries" },
+  天姚: { en: "Heavenly Beauty", meaning: "Charm — romance, social allure, artistic sense" },
+  天喜: { en: "Heavenly Joy", meaning: "Celebration — marriage luck, happy occasions" },
+  紅鸞: { en: "Red Phoenix", meaning: "Romance — love, attraction, wedding star" },
+  天壽: { en: "Heavenly Longevity", meaning: "Health — vitality, longevity, recovery" },
+  天才: { en: "Heavenly Talent", meaning: "Talent — innate gifts, natural ability" },
+  天官: { en: "Heavenly Official", meaning: "Authority — government connections, rank" },
+  天福: { en: "Heavenly Fortune", meaning: "Blessing — natural luck, spiritual protection" },
+  天廚: { en: "Heavenly Kitchen", meaning: "Nourishment — food, culinary talent, sustenance" },
+  恩光: { en: "Grace Light", meaning: "Grace — favor from elders, dignified support" },
+  天貴: { en: "Heavenly Noble", meaning: "Prestige — social status, noble connections" },
+  天哭: { en: "Heavenly Cry", meaning: "Sorrow — emotional sensitivity, empathy" },
+  天虛: { en: "Heavenly Emptiness", meaning: "Loss — unfulfilled expectations, letting go" },
+  龍池: { en: "Dragon Pool", meaning: "Artistry — refined skills, cultural achievement" },
+  鳳閣: { en: "Phoenix Tower", meaning: "Elegance — aesthetic sense, literary talent" },
+  孤辰: { en: "Lonely Star", meaning: "Independence — solitude, self-reliance" },
+  寡宿: { en: "Widow Star", meaning: "Solitude — spiritual independence, detachment" },
+  蜚廉: { en: "Flying Gossip", meaning: "Rumors — verbal disputes, slander risk" },
+  破碎: { en: "Broken Pieces", meaning: "Fragmentation — scattered energy, disruption" },
+  華蓋: { en: "Canopy", meaning: "Spirituality — religious inclination, artistic isolation" },
+  咸池: { en: "Salty Pool", meaning: "Attraction — romance, sensuality, social charm" },
+  天德: { en: "Heavenly Virtue", meaning: "Virtue — natural goodness, divine protection" },
+  月德: { en: "Monthly Virtue", meaning: "Kindness — monthly fortune, gentle protection" },
+  台輔: { en: "Platform Support", meaning: "Support — career assistance, noble backing" },
+  封誥: { en: "Imperial Seal", meaning: "Honor — recognition, official appointments" },
+  解神: { en: "Resolver", meaning: "Resolution — dissolving problems, overcoming obstacles" },
+  天巫: { en: "Heavenly Shaman", meaning: "Mysticism — spiritual gifts, healing ability" },
+  三台: { en: "Three Platforms", meaning: "Promotion — career advancement, step by step" },
+  八座: { en: "Eight Seats", meaning: "Authority — dignified positions, governance" },
+  截空: { en: "Intercept Void", meaning: "Void — emptied energy, spiritual redirection" },
+  旬空: { en: "Cycle Void", meaning: "Void — karmic clearing, fresh start potential" },
+};
+
+function StarChip({ star }: { star: Star }) {
+  const info = STAR_ENGLISH[star.name];
+  const tooltip = info
+    ? `${star.name} (${info.en})\n${info.meaning}`
+    : star.name;
+  const yt = star.YT;
+
+  return (
+    <span className="ziwei-star-chip" title={tooltip}>
+      {star.name}
+      {yt ? (
+        <span
+          className="ziwei-hua"
+          style={{ color: TRANSFORMATION_COLORS[yt.name] || "var(--gold)" }}
+          title={`${yt.name} — Year Transformation`}
+        >
+          {yt.name.charAt(1)}
+        </span>
+      ) : null}
+    </span>
+  );
+}
+
+function ZiWeiLegend() {
+  return (
+    <div className="ziwei-legend">
+      <h3>Guide / 圖例</h3>
+
+      <div className="ziwei-legend-section">
+        <h4>Four Transformations / 四化</h4>
+        <p className="ziwei-legend-desc">
+          Based on the birth year Heavenly Stem, four stars receive special transformations that amplify or challenge their energy.
+          The single-character suffix (祿/權/科/忌) next to a star name indicates which transformation it carries.
+        </p>
+        <div className="ziwei-legend-items">
+          <span className="ziwei-legend-chip" style={{ borderColor: "var(--hua-lu, #4ade80)" }}>
+            <span style={{ color: "var(--hua-lu, #4ade80)" }}>祿</span> 化祿 Hua Lu — Wealth &amp; opportunity enhancement
+          </span>
+          <span className="ziwei-legend-chip" style={{ borderColor: "var(--hua-quan, #f59e0b)" }}>
+            <span style={{ color: "var(--hua-quan, #f59e0b)" }}>權</span> 化權 Hua Quan — Authority &amp; power enhancement
+          </span>
+          <span className="ziwei-legend-chip" style={{ borderColor: "var(--hua-ke, #60a5fa)" }}>
+            <span style={{ color: "var(--hua-ke, #60a5fa)" }}>科</span> 化科 Hua Ke — Fame &amp; recognition enhancement
+          </span>
+          <span className="ziwei-legend-chip" style={{ borderColor: "var(--hua-ji, #f87171)" }}>
+            <span style={{ color: "var(--hua-ji, #f87171)" }}>忌</span> 化忌 Hua Ji — Obstruction &amp; karmic lessons
+          </span>
+        </div>
+      </div>
+
+      <div className="ziwei-legend-section">
+        <h4>Key Terms / 術語</h4>
+        <div className="ziwei-legend-terms">
+          <dl>
+            <dt>來因宮 (Lai Yin)</dt>
+            <dd>The Origin Palace — the palace whose Heavenly Stem matches the birth year stem. It reveals the root motivation and karmic origin of this life, indicating where your deepest drive comes from.</dd>
+            <dt>五行局 (Five Element Bureau)</dt>
+            <dd>A number (2–6) derived from the Life Palace position and birth year stem. It determines the pacing of your destiny and where the Purple Star is placed. E.g. 水二局 = Water Bureau 2.</dd>
+            <dt>大限 (Decade Luck)</dt>
+            <dd>Each palace activates for a ~10-year period shown as &quot;Ages X–Y&quot;. During that decade, the stars in that palace strongly influence your life.</dd>
+            <dt>天干 (Heavenly Stem)</dt>
+            <dd>One of 10 cyclical characters (甲乙丙丁戊己庚辛壬癸) paired with each palace and year.</dd>
+            <dt>地支 (Earthly Branch)</dt>
+            <dd>One of 12 cyclical characters (子丑寅卯辰巳午未申酉戌亥) forming the 12 palace positions.</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div className="ziwei-legend-section">
+        <h4>Major Stars Quick Reference / 主星一覽</h4>
+        <p className="ziwei-legend-desc">
+          Hover over any star in the chart above for its meaning. Here are the 14 main stars:
+        </p>
+        <div className="ziwei-star-ref">
+          {[
+            "紫微", "天機", "太陽", "武曲", "天同", "廉貞", "天府",
+            "太陰", "貪狼", "巨門", "天相", "天梁", "七殺", "破軍",
+          ].map((name) => {
+            const info = STAR_ENGLISH[name];
+            return info ? (
+              <div key={name} className="ziwei-star-ref-item">
+                <span className="ziwei-star-ref-zh">{name}</span>
+                <span className="ziwei-star-ref-en">{info.en}</span>
+                <span className="ziwei-star-ref-meaning">{info.meaning.split(" — ")[1]}</span>
+              </div>
+            ) : null;
+          })}
+        </div>
+      </div>
     </div>
   );
 }

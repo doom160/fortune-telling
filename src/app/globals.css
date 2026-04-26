@@ -1290,6 +1290,75 @@ button:hover {
 .ziwei-stars-text { margin: 0; font-size: 0.87rem; line-height: 1.5; color: var(--muted); }
 .ziwei-stars-secondary { color: var(--muted-dim); }
 
+/* Star chips & transformations */
+.ziwei-stars-list {
+  display: flex; flex-wrap: wrap; gap: 0.3rem 0.4rem; margin: 0;
+}
+.ziwei-star-chip {
+  display: inline-flex; align-items: center; gap: 0.15rem;
+  font-size: 0.82rem; color: var(--muted); cursor: help;
+  padding: 0.1rem 0.35rem; border-radius: 3px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+  transition: background 0.15s;
+}
+.ziwei-star-chip:hover { background: rgba(255,255,255,0.1); color: var(--gold); }
+.ziwei-hua {
+  font-size: 0.7rem; font-weight: 700; margin-left: 0.1rem;
+}
+
+/* Legend / Guide section */
+.ziwei-legend {
+  margin-top: 2rem; padding: 1.5rem; border-radius: 12px;
+  background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
+}
+.ziwei-legend h3 {
+  font-size: 1.15rem; color: var(--gold); margin: 0 0 1.25rem;
+}
+.ziwei-legend-section { margin-bottom: 1.5rem; }
+.ziwei-legend-section:last-child { margin-bottom: 0; }
+.ziwei-legend-section h4 {
+  font-size: 0.95rem; color: var(--text); margin: 0 0 0.5rem;
+}
+.ziwei-legend-desc {
+  font-size: 0.85rem; color: var(--muted); margin: 0 0 0.75rem; line-height: 1.6;
+}
+.ziwei-legend-items {
+  display: flex; flex-direction: column; gap: 0.5rem;
+}
+.ziwei-legend-chip {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-size: 0.84rem; color: var(--muted); padding: 0.4rem 0.75rem;
+  border-radius: 6px; border-left: 3px solid; background: rgba(255,255,255,0.02);
+}
+.ziwei-legend-terms dl {
+  margin: 0; display: grid; gap: 0.75rem;
+}
+.ziwei-legend-terms dt {
+  font-size: 0.9rem; font-weight: 600; color: var(--gold);
+}
+.ziwei-legend-terms dd {
+  margin: 0.15rem 0 0; font-size: 0.84rem; color: var(--muted); line-height: 1.6;
+}
+
+/* Major star reference grid */
+.ziwei-star-ref {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.5rem;
+}
+.ziwei-star-ref-item {
+  display: flex; align-items: baseline; gap: 0.5rem;
+  padding: 0.35rem 0.6rem; border-radius: 6px;
+  background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+  font-size: 0.82rem;
+}
+.ziwei-star-ref-zh { color: var(--gold); font-weight: 600; white-space: nowrap; }
+.ziwei-star-ref-en { color: var(--text); white-space: nowrap; }
+.ziwei-star-ref-meaning { color: var(--muted); font-size: 0.78rem; }
+
+@media (max-width: 767px) {
+  .ziwei-star-ref { grid-template-columns: 1fr; }
+  .ziwei-legend { padding: 1rem; }
+}
+
 @media (max-width: 767px) {
   .ziwei-palace-grid { grid-template-columns: 1fr; }
 }

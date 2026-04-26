@@ -156,10 +156,20 @@ export function calculateZiWei(input: ZiWeiInput): ZiWeiChart {
   const palaces = astrolabe.palaces.map(mapPalace);
   const interpretation = buildInterpretation(astrolabe, palaces, input.name?.trim() || undefined);
 
+  // The library's getSolarDateText has a bug: it uses Date.getDay() (day-of-week)
+  // instead of Date.getDate() (day-of-month), producing wrong solar date strings.
+  // We format the dates ourselves to work around this.
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const fmtDate = (d: Date) =>
+    `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  const solarDate = fmtDate(localTime.toJSDate());
+
   return {
     name: input.name?.trim() || undefined,
-    solarDate: astrolabe.solarDate,
-    solarDateByTrue: astrolabe.solarDateByTrue,
+    solarDate,
+    solarDateByTrue: astrolabe.solarDateByTrue
+      ? solarDate.split(" ")[0] + " " + astrolabe.solarDateByTrue.split(" ")[1]
+      : undefined,
     lunisolarDate: astrolabe.lunisolarDate,
     zodiac: astrolabe.zodiac,
     birthYearStem: astrolabe.birthYearStem,
