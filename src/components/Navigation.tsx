@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { href: "/numerology", label: "數理 Numerology" },
   { href: "/qmdj", label: "奇門 Qi Men" },
   { href: "/astrology", label: "星盤 Astrology" },
+  { href: "/zodiac", label: "生肖 Zodiac" },
   { href: "/faq", label: "常問 FAQ" },
 ];
 

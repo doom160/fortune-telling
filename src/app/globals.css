@@ -2735,3 +2735,321 @@ button:hover {
   color: var(--muted);
   margin-bottom: 1rem;
 }
+
+/* ═══════════════════════════════════════════════ */
+/* Zodiac Styles */
+/* ═══════════════════════════════════════════════ */
+
+.zodiac-profile {
+  display: flex; gap: 1.25rem; padding: 1.25rem;
+  border-radius: 12px; background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06); margin-bottom: 1.5rem;
+}
+.zodiac-profile-animal { font-size: 3.5rem; line-height: 1; }
+.zodiac-profile-info { flex: 1; }
+.zodiac-profile-info h3 { margin: 0 0 0.25rem; font-size: 1.15rem; color: var(--gold); }
+.zodiac-profile-meta { margin: 0 0 0.5rem; font-size: 0.85rem; color: var(--muted); }
+.zodiac-profile-traits { margin: 0 0 0.75rem; font-size: 0.88rem; color: var(--text); line-height: 1.6; }
+.zodiac-profile-compat { display: flex; flex-wrap: wrap; gap: 0.5rem; font-size: 0.82rem; }
+.zodiac-compat-good { color: #4ade80; }
+.zodiac-compat-bad { color: #f87171; }
+
+/* Forecast legend */
+.zodiac-forecast-section { margin-bottom: 1.5rem; }
+.zodiac-forecast-section h3 { font-size: 1.05rem; color: var(--gold); margin: 0 0 0.75rem; }
+.zodiac-forecast-legend {
+  display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center;
+  font-size: 0.78rem; color: var(--muted); margin-bottom: 1rem;
+}
+.zodiac-legend-dot {
+  display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 0.2rem;
+}
+
+/* Forecast grid */
+.zodiac-forecast-grid {
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.4rem;
+}
+.zodiac-day {
+  display: flex; flex-direction: column; align-items: center; gap: 0.15rem;
+  padding: 0.5rem 0.25rem; border-radius: 8px; cursor: pointer;
+  border: 2px solid transparent; transition: border-color 0.15s, transform 0.1s;
+  background: rgba(255,255,255,0.03); font-family: inherit; color: inherit;
+}
+.zodiac-day:hover { transform: translateY(-1px); }
+.zodiac-day--today { border-color: var(--gold); }
+.zodiac-day--selected { border-color: var(--text); }
+.zodiac-day-date { font-size: 0.72rem; color: var(--muted); font-weight: 600; }
+.zodiac-day-animal { font-size: 1.25rem; line-height: 1; }
+.zodiac-day-officer { font-size: 0.75rem; color: var(--gold); font-weight: 600; }
+.zodiac-day-rel { font-size: 0.65rem; font-weight: 600; margin-top: 0.1rem; }
+
+/* Rating colors */
+.zodiac-day--very-auspicious { background: rgba(74, 222, 128, 0.15); }
+.zodiac-day--very-auspicious .zodiac-day-rel { color: #4ade80; }
+.zodiac-day--auspicious { background: rgba(163, 230, 53, 0.12); }
+.zodiac-day--auspicious .zodiac-day-rel { color: #a3e635; }
+.zodiac-day--neutral { background: rgba(255,255,255,0.04); }
+.zodiac-day--neutral .zodiac-day-rel { color: var(--muted); }
+.zodiac-day--challenging { background: rgba(251, 146, 60, 0.12); }
+.zodiac-day--challenging .zodiac-day-rel { color: #fb923c; }
+.zodiac-day--very-challenging { background: rgba(248, 113, 113, 0.15); }
+.zodiac-day--very-challenging .zodiac-day-rel { color: #f87171; }
+
+/* Expanded day detail */
+.zodiac-detail {
+  margin-top: 0.75rem; padding: 1rem 1.25rem; border-radius: 10px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+}
+.zodiac-detail-header {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;
+}
+.zodiac-detail-date { font-weight: 600; color: var(--text); font-size: 0.95rem; }
+.zodiac-detail-animal { font-size: 0.9rem; color: var(--muted); }
+.zodiac-detail-rating {
+  padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.78rem; font-weight: 600;
+}
+.zodiac-detail-rels { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.75rem; }
+.zodiac-detail-rel-chip {
+  padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem;
+  background: rgba(255,255,255,0.06); color: var(--muted); border: 1px solid rgba(255,255,255,0.08);
+}
+.zodiac-detail-text { font-size: 0.88rem; color: var(--text); line-height: 1.65; margin: 0; }
+
+.zodiac-interpretation { margin-bottom: 1.5rem; }
+.zodiac-interpretation h3 { font-size: 1.05rem; color: var(--gold); margin: 0 0 0.75rem; }
+
+/* Almanac suitable/avoid columns */
+.zodiac-detail-almanac {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+  margin-top: 0.75rem; padding-top: 0.75rem;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.zodiac-almanac-col strong {
+  display: block; font-size: 0.82rem; margin-bottom: 0.35rem;
+}
+.zodiac-almanac-good strong { color: #4ade80; }
+.zodiac-almanac-bad strong { color: #f87171; }
+.zodiac-almanac-col ul {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-wrap: wrap; gap: 0.3rem;
+}
+.zodiac-almanac-col li {
+  font-size: 0.78rem; color: var(--muted);
+  padding: 0.15rem 0.45rem; border-radius: 4px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+}
+.zodiac-officer-chip { color: var(--gold) !important; border-color: rgba(212,175,55,0.3) !important; }
+
+@media (max-width: 900px) {
+  .zodiac-forecast-grid { grid-template-columns: repeat(4, 1fr); }
+}
+@media (max-width: 600px) {
+  .zodiac-forecast-grid { grid-template-columns: repeat(4, 1fr); }
+  .zodiac-profile { flex-direction: column; align-items: center; text-align: center; }
+  .zodiac-profile-compat { justify-content: center; }
+  .zodiac-day { padding: 0.4rem 0.15rem; }
+  .zodiac-day-animal { font-size: 1rem; }
+}
+
+/* ═══════════════════════════════════════════════ */
+/* BaZi Compatibility Styles                      */
+/* ═══════════════════════════════════════════════ */
+
+.compat-form-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.compat-person h3 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--gold);
+  margin: 0 0 0.75rem;
+  font-weight: 400;
+}
+
+.compat-score {
+  display: flex;
+  justify-content: center;
+  margin: 1.5rem 0;
+}
+
+.compat-score-circle {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 3px solid var(--gold);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(180, 136, 46, 0.06);
+}
+
+.compat-score-number {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 300;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.compat-score-rating {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+  letter-spacing: 0.05em;
+}
+
+.compat-pillars-compare {
+  margin-bottom: 1.5rem;
+}
+
+.compat-pillars-compare h3 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--gold);
+  margin: 0 0 0.75rem;
+  font-weight: 400;
+}
+
+.compat-pillars-compare table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.compat-pillars-compare th,
+.compat-pillars-compare td {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--panel-border);
+  text-align: center;
+  font-family: var(--font-display);
+}
+
+.compat-pillars-compare th {
+  background: var(--surface);
+  color: var(--gold);
+  font-weight: 500;
+  font-size: 0.8rem;
+}
+
+.compat-pillars-compare td {
+  color: var(--foreground);
+  font-size: 1.1rem;
+  letter-spacing: 0.1em;
+}
+
+.compat-row-label {
+  font-size: 0.82rem !important;
+  color: var(--muted) !important;
+  text-align: left !important;
+  letter-spacing: 0 !important;
+}
+
+.compat-factors {
+  margin-bottom: 1.5rem;
+}
+
+.compat-factors h3 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--gold);
+  margin: 0 0 0.75rem;
+  font-weight: 400;
+}
+
+.compat-factor-row {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.compat-factor-row:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.compat-factor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.35rem;
+}
+
+.compat-factor-name {
+  font-size: 0.88rem;
+  color: var(--foreground);
+  font-weight: 500;
+}
+
+.compat-factor-score {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.compat-factor-score.positive { color: #4ade80; }
+.compat-factor-score.negative { color: #f87171; }
+.compat-factor-score.neutral { color: var(--muted); }
+
+.compat-factor-bar {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 2px;
+  margin-bottom: 0.4rem;
+  overflow: hidden;
+}
+
+.compat-factor-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s;
+}
+
+.compat-factor-fill.positive { background: #4ade80; }
+.compat-factor-fill.negative { background: #f87171; }
+.compat-factor-fill.neutral { background: var(--muted-dim); }
+
+.compat-factor-desc {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.compat-interpretation {
+  margin-bottom: 1.5rem;
+}
+
+.compat-interpretation h3 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--gold);
+  margin: 0 0 0.75rem;
+  font-weight: 400;
+}
+
+@media (max-width: 640px) {
+  .compat-form-pair {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .compat-score-circle {
+    width: 120px;
+    height: 120px;
+  }
+
+  .compat-score-number {
+    font-size: 1.8rem;
+  }
+
+  .compat-pillars-compare td {
+    font-size: 0.95rem;
+    padding: 0.4rem;
+  }
+}
+

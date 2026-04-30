@@ -208,6 +208,9 @@ export default function BaziPage() {
           </label>
 
           <button type="submit">Generate BaZi Reading / 排八字</button>
+          <a href="/bazi/compatibility" className="methodology-trigger" style={{ marginTop: "0.75rem", textAlign: "center", textDecoration: "none", display: "block" }}>
+            Try Compatibility Analysis (合婚) →
+          </a>
           {error ? <p className="error-msg">{error}</p> : null}
         </form>
 

@@ -13,6 +13,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/numerology`, lastModified, changeFrequency: "monthly", priority: 0.8 },
     { url: `${base}/qmdj`, lastModified, changeFrequency: "monthly", priority: 0.8 },
     { url: `${base}/astrology`, lastModified, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${base}/zodiac`, lastModified, changeFrequency: "monthly", priority: 0.8 },
+    { url: `${base}/bazi/compatibility`, lastModified, changeFrequency: "monthly", priority: 0.7 },
     { url: `${base}/faq`, lastModified, changeFrequency: "monthly", priority: 0.5 },
   ];
 }

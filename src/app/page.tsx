@@ -31,6 +31,7 @@ const SYSTEMS = [
   { id: "numerology", href: "/numerology", zh: "數理", en: "Mystic Numbers", sub: "East-West Numerology", tags: ["East-West", "Personality"] },
   { id: "qmdj", href: "/qmdj", zh: "奇門遁甲", en: "Qi Men Dun Jia", sub: "Strategic Divination", tags: ["Chinese", "Strategy"] },
   { id: "astrology", href: "/astrology", zh: "星盤", en: "Western Astrology", sub: "Natal Chart & Transits", tags: ["Western", "Forecast"] },
+  { id: "zodiac", href: "/zodiac", zh: "生肖", en: "Chinese Zodiac", sub: "Daily Animal Forecast", tags: ["Chinese", "Forecast"] },
 ];
 
 export default function HomePage() {
@@ -104,6 +105,9 @@ export default function HomePage() {
             <p>
               <strong>Western Astrology:</strong> Enter your birth details and location to generate a natal chart with planet positions, house placements, aspects, and current transit overlays.
             </p>
+            <p>
+              <strong>Chinese Zodiac:</strong> Enter your birth year to discover your zodiac animal profile and view a 28-day daily forecast based on classical Earthly Branch relationships.
+            </p>
           </div>
           <div className="about-block">
             <h3>For Reflection</h3>
@@ -139,6 +143,9 @@ export default function HomePage() {
           </Link>
           <Link href="/astrology" className="btn btn-secondary">
             星盤 Western Astrology
+          </Link>
+          <Link href="/zodiac" className="btn btn-secondary">
+            生肖 Chinese Zodiac
           </Link>
         </div>
       </section>
