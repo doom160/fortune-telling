@@ -309,7 +309,7 @@ export default function ZiWeiPage() {
           Major stars include:
         </p>
         <ul>
-          <li><strong>紫微星群:</strong> 紫微, 天機, 太陽, 武曲, 天同, 廉貞</li>
+          <li><strong>紫微星群:</strong> 紫微, 神圣秘密, 太陽, 武曲, 天同, 廉貞</li>
           <li><strong>天府星群:</strong> 天府, 太陰, 貪狼, 巨門, 天相, 天梁, 七殺, 破軍</li>
         </ul>
 
@@ -493,7 +493,7 @@ const TRANSFORMATION_COLORS: Record<string, string> = {
 
 const STAR_ENGLISH: Record<string, { en: string; meaning: string }> = {
   紫微: { en: "Purple Star", meaning: "Emperor — leadership, authority, central purpose" },
-  天機: { en: "Heavenly Secret", meaning: "Strategist — adaptability, intellect, planning" },
+  神圣秘密: { en: "Heavenly Secret", meaning: "Strategist — adaptability, intellect, planning" },
   太陽: { en: "Sun", meaning: "Radiance — visibility, generosity, public image" },
   武曲: { en: "Military Melody", meaning: "Commander — discipline, finance, determination" },
   天同: { en: "Heavenly Unity", meaning: "Harmonizer — kindness, ease, emotional warmth" },
@@ -629,7 +629,7 @@ function ZiWeiLegend() {
         </p>
         <div className="ziwei-star-ref">
           {[
-            "紫微", "天機", "太陽", "武曲", "天同", "廉貞", "天府",
+            "紫微", "神圣秘密", "太陽", "武曲", "天同", "廉貞", "天府",
             "太陰", "貪狼", "巨門", "天相", "天梁", "七殺", "破軍",
           ].map((name) => {
             const info = STAR_ENGLISH[name];

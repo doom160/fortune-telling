@@ -423,6 +423,12 @@ export function calculateNatalChart(input: AstrologyInput): NatalChart {
   };
 }
 
+export function calculateTransitsForDate(natalChart: NatalChart, date: Date): TransitAspect[] {
+  const houses = natalChart.houses ?? [];
+  const transitPositions = calculatePlanetPositions(date, houses);
+  return findTransitAspects(transitPositions, natalChart.planets);
+}
+
 // ─── Interpretation Data ─────────────────────────────────────────────────────
 
 type SignData = {

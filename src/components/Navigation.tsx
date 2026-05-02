@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { href: "/qmdj", label: "奇門 Qi Men" },
   { href: "/astrology", label: "星盤 Astrology" },
   { href: "/zodiac", label: "生肖 Zodiac" },
+  { href: "/oracle", label: "合一 Oracle" },
   { href: "/faq", label: "常問 FAQ" },
 ];
 
@@ -46,7 +47,7 @@ export function Navigation() {
     <nav className="main-nav" ref={navRef}>
       <div className="nav-container">
         <Link href="/" className="nav-logo">
-          天機 Heavenly Secrets
+          神圣秘密 Divine Secrets
         </Link>
         <div className="nav-dropdown-wrapper">
           <button

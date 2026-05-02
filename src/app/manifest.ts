@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "天機 Heavenly Secrets",
-    short_name: "天機",
+    name: "神圣秘密 Divine Secrets",
+    short_name: "神圣秘密",
     description:
       "Ancient arts of divination — BaZi, Zi Wei Dou Shu, Qi Men Dun Jia, Western Astrology, Tarot, Guanyin Lots, and Numerology.",
     start_url: "/",

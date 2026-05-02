@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: "https://heavenly-secrets.app/sitemap.xml",
+    sitemap: "https://divine-secrets.app/sitemap.xml",
   };
 }

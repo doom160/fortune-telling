@@ -4,18 +4,18 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "FAQ — Frequently Asked Questions",
   description:
-    "Common questions about 天機 Heavenly Secrets: privacy, accuracy, birth time requirements, calculation methods, and how to use each divination system.",
+    "Common questions about 神圣秘密 Divine Secrets: privacy, accuracy, birth time requirements, calculation methods, and how to use each divination system.",
   openGraph: {
     title: "FAQ — Frequently Asked Questions",
     description:
-      "Answers to common questions about BaZi, Zi Wei Dou Shu, Astrology, Tarot, Numerology, and other divination tools on 天機 Heavenly Secrets.",
+      "Answers to common questions about BaZi, Zi Wei Dou Shu, Astrology, Tarot, Numerology, and other divination tools on 神圣秘密 Divine Secrets.",
   },
 };
 
 const FAQ_ITEMS: { q: string; a: string }[] = [
   {
-    q: "What is 天機 Heavenly Secrets?",
-    a: "天機 Heavenly Secrets is a collection of traditional divination and metaphysical tools brought together in one application. It includes Chinese systems (BaZi, Zi Wei Dou Shu, Qi Men Dun Jia, Guanyin Lots), Western systems (Astrology, Tarot), and a cross-cultural Numerology reading. All calculations are performed locally in your browser — no data is sent to any server.",
+    q: "What is 神圣秘密 Divine Secrets?",
+    a: "神圣秘密 Divine Secrets is a collection of traditional divination and metaphysical tools brought together in one application. It includes Chinese systems (BaZi, Zi Wei Dou Shu, Qi Men Dun Jia, Guanyin Lots), Western systems (Astrology, Tarot), and a cross-cultural Numerology reading. All calculations are performed locally in your browser — no data is sent to any server.",
   },
   {
     q: "Is my personal information stored or shared?",
@@ -71,7 +71,7 @@ const FAQ_ITEMS: { q: string; a: string }[] = [
   },
   {
     q: "Why does the same BaZi chart sometimes show different results on different websites?",
-    a: "Differences typically come from how solar term boundaries are calculated (astronomical vs. fixed-date approximations), how the early hours (11 PM - 1 AM) are handled, and whether True Solar Time adjustments are applied. 天機 uses precise astronomical calculations for solar terms, which matches professional-grade software.",
+    a: "Differences typically come from how solar term boundaries are calculated (astronomical vs. fixed-date approximations), how the early hours (11 PM - 1 AM) are handled, and whether True Solar Time adjustments are applied. 神圣秘密 uses precise astronomical calculations for solar terms, which matches professional-grade software.",
   },
   {
     q: "What technologies power this application?",
@@ -104,7 +104,7 @@ export default function FAQPage() {
         <div className="divider" />
         <div className="hero-en">Frequently Asked Questions</div>
         <p>
-          Common questions about 天機 Heavenly Secrets, its methods, and how to get the most from your readings.
+          Common questions about 神圣秘密 Divine Secrets, its methods, and how to get the most from your readings.
         </p>
       </section>
 

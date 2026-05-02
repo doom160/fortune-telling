@@ -3,11 +3,11 @@ import Link from "next/link";
 import { Stars, Orbs } from "@/components/Stars";
 
 export const metadata: Metadata = {
-  title: "天機 Heavenly Secrets — Ancient Arts of Divination",
+  title: "神圣秘密 Divine Secrets — Ancient Arts of Divination",
   description:
     "Explore seven divination systems: BaZi, Zi Wei Dou Shu, Qi Men Dun Jia, Western Astrology, Tarot, Guanyin Lots, and Numerology. Free, private, browser-based readings with detailed interpretations.",
   openGraph: {
-    title: "天機 Heavenly Secrets — Ancient Arts of Divination",
+    title: "神圣秘密 Divine Secrets — Ancient Arts of Divination",
     description:
       "Free online divination tools spanning Chinese and Western traditions. BaZi, Zi Wei Dou Shu, Astrology, Tarot, Numerology, and more — all private and browser-based.",
   },
@@ -16,8 +16,8 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "天機 Heavenly Secrets",
-  url: "https://heavenly-secrets.app",
+  name: "神圣秘密 Divine Secrets",
+  url: "https://divine-secrets.app",
   description:
     "A collection of traditional divination and metaphysical tools including BaZi, Zi Wei Dou Shu, Qi Men Dun Jia, Western Astrology, Tarot, Guanyin Lots, and Numerology.",
   inLanguage: ["en", "zh-Hant"],
@@ -25,13 +25,15 @@ const jsonLd = {
 
 const SYSTEMS = [
   { id: "bazi", href: "/bazi", zh: "八字", en: "Bazi", sub: "Four Pillars of Destiny", tags: ["Chinese", "Forecast"] },
+  { id: "bazi_compatibility", href: "/bazi/compatibility", zh: "八字配合", en: "Bazi Compatibility", sub: "Four Pillars of Destiny", tags: ["Chinese", "Relationship"] },
   { id: "zwds", href: "/ziwei", zh: "紫微斗數", en: "Zi Wei Dou Shu", sub: "Purple Star Astrology", tags: ["Chinese", "Forecast"] },
+  { id: "qmdj", href: "/qmdj", zh: "奇門遁甲", en: "Qi Men Dun Jia", sub: "Strategic Divination", tags: ["Chinese", "Strategy"] },
   { id: "guanyin", href: "/guanyin", zh: "觀音靈籤", en: "Guan Yin Divination", sub: "Oracle of Compassion", tags: ["Chinese", "Guidance"] },
+  { id: "zodiac", href: "/zodiac", zh: "生肖", en: "Chinese Zodiac", sub: "Daily Animal Forecast", tags: ["Chinese", "Forecast"] },
   { id: "tarot", href: "/tarot", zh: "塔羅牌", en: "Tarot", sub: "Archetypal Wisdom", tags: ["Western", "Guidance"] },
   { id: "numerology", href: "/numerology", zh: "數理", en: "Mystic Numbers", sub: "East-West Numerology", tags: ["East-West", "Personality"] },
-  { id: "qmdj", href: "/qmdj", zh: "奇門遁甲", en: "Qi Men Dun Jia", sub: "Strategic Divination", tags: ["Chinese", "Strategy"] },
   { id: "astrology", href: "/astrology", zh: "星盤", en: "Western Astrology", sub: "Natal Chart & Transits", tags: ["Western", "Forecast"] },
-  { id: "zodiac", href: "/zodiac", zh: "生肖", en: "Chinese Zodiac", sub: "Daily Animal Forecast", tags: ["Chinese", "Forecast"] },
+  { id: "oracle", href: "/oracle", zh: "合一神諭", en: "Oracle", sub: "Cross-System Unified Reading", tags: ["All Systems", "Synthesis"] },
 ];
 
 export default function HomePage() {
@@ -45,7 +47,7 @@ export default function HomePage() {
         <Orbs />
         <Stars />
         <div className="hero-content">
-          <p className="tagline-zh">天機 Heavenly Secrets</p>
+          <p className="tagline-zh">神圣秘密 Divine Secrets</p>
           <div className="divider" />
           <h1>The Ancient Arts<br />of Divination</h1>
           <p className="subtitle">
@@ -76,7 +78,7 @@ export default function HomePage() {
           <div className="about-block">
             <h3>Authentic Practices</h3>
             <p>
-              天機 Heavenly Secrets combines traditional metaphysical practices with modern convenience.
+              神圣秘密 Divine Secrets combines traditional metaphysical practices with modern convenience.
               Whether you&apos;re drawn to the structured depth of BaZi or the intuitive guidance of Tarot,
               each tool offers a unique pathway to self-discovery.
             </p>
@@ -132,19 +134,19 @@ export default function HomePage() {
           <Link href="/guanyin" className="btn btn-primary">
             觀音 Guanyin Lots
           </Link>
-          <Link href="/tarot" className="btn btn-secondary">
+          <Link href="/tarot" className="btn btn-primary">
             塔羅 Tarot Reading
           </Link>
-          <Link href="/numerology" className="btn btn-secondary">
+          <Link href="/numerology" className="btn btn-primary">
             數理 Numerology
           </Link>
-          <Link href="/qmdj" className="btn btn-secondary">
+          <Link href="/qmdj" className="btn btn-primary">
             奇門 Qi Men Dun Jia
           </Link>
-          <Link href="/astrology" className="btn btn-secondary">
+          <Link href="/astrology" className="btn btn-primary">
             星盤 Western Astrology
           </Link>
-          <Link href="/zodiac" className="btn btn-secondary">
+          <Link href="/zodiac" className="btn btn-primary">
             生肖 Chinese Zodiac
           </Link>
         </div>
