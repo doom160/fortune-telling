@@ -9,6 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
     "@ziweijs/core": "^0.3.0",
     "astronomy-engine": "^2.1.19",
     "html2canvas": "^1.4.1",
