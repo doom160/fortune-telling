@@ -116,7 +116,7 @@ export function LifeForecastClient() {
     }
 
     try {
-      const chart = calculateNumerology({ birthDate, gender });
+      const chart = calculateNumerology({ birthDate });
       numerologyResult = { status: "ok", data: chart };
     } catch (err) {
       numerologyResult = { status: "error", message: err instanceof Error ? err.message : "Numerology calculation failed." };

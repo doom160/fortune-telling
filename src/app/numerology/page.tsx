@@ -9,7 +9,6 @@ type FormState = {
   name: string;
   birthDate: string;
   birthTime: string;
-  gender: "male" | "female";
 };
 
 const ELEMENT_COLORS: Record<string, string> = {
@@ -24,7 +23,6 @@ const EMPTY_FORM: FormState = {
   name: "",
   birthDate: "",
   birthTime: "",
-  gender: "female",
 };
 
 const CORE_NUMBER_LABELS: Record<number, string> = {
@@ -74,7 +72,6 @@ export default function NumerologyPage() {
     try {
       const result = calculateNumerology({
         name: form.name.trim() || undefined,
-        gender: form.gender,
         birthDate: form.birthDate,
         birthTime: form.birthTime || undefined,
       });
@@ -194,20 +191,6 @@ export default function NumerologyPage() {
               value={form.birthTime}
               onChange={(event) => setForm((prev) => ({ ...prev, birthTime: event.target.value }))}
             />
-          </label>
-
-          <label>
-            Gender / 性別
-            <select
-              value={form.gender}
-              onChange={(event) =>
-                setForm((prev) => ({ ...prev, gender: event.target.value as "male" | "female" }))
-              }
-              required
-            >
-              <option value="female">Female</option>
-              <option value="male">Male</option>
-            </select>
           </label>
 
           <button type="submit">Generate Numerology Reading / 排數理</button>

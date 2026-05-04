@@ -12,12 +12,10 @@ import {
 } from "@/lib/tarot";
 
 type FormState = {
-  name: string;
   spreadType: TarotSpread;
 };
 
 const EMPTY_FORM: FormState = {
-  name: "",
   spreadType: "ThreeCard",
 };
 
@@ -33,7 +31,7 @@ export default function TarotPage() {
     setError("");
 
     try {
-      const result = performTarotReading(form.spreadType, form.name.trim() || undefined);
+      const result = performTarotReading(form.spreadType);
       setReading(result);
     } catch (submitError) {
       setReading(null);
@@ -60,16 +58,6 @@ export default function TarotPage() {
       <section className="workspace-grid">
         <form className="panel" onSubmit={handleSubmit}>
           <h2>Reading Setup / 牌阵设置</h2>
-
-          <label>
-            Name / 姓名 (optional)
-            <input
-              type="text"
-              value={form.name}
-              onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
-              placeholder="e.g. Sarah"
-            />
-          </label>
 
           <label>
             Spread Type / 牌阵
@@ -118,11 +106,6 @@ export default function TarotPage() {
                 <p>
                   <span>Spread:</span> {getSpreadDefinition(reading.spread).label}
                 </p>
-                {reading.name ? (
-                  <p>
-                    <span>Seeker:</span> {reading.name}
-                  </p>
-                ) : null}
                 <p>
                   <span>Date:</span> {new Date(reading.timestamp).toLocaleDateString()}
                 </p>

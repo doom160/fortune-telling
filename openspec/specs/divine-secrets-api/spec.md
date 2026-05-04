@@ -247,6 +247,54 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /readings/iching:
+    post:
+      summary: Cast an I Ching hexagram reading using the three-coin method
+      operationId: createIChingReading
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IChingInput'
+      responses:
+        '200':
+          description: I Ching reading cast successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IChingResult'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /readings/rune:
+    post:
+      summary: Draw three Elder Futhark runes for a Past / Present / Future reading
+      operationId: createRuneReading
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RuneInput'
+      responses:
+        '200':
+          description: Norse Rune reading drawn successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RuneResult'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /readings/unified:
     post:
       summary: Cross-system unified reading
@@ -353,6 +401,128 @@ components:
         timeZone:
           type: string
           description: IANA timezone identifier (e.g. "Asia/Shanghai")
+
+    IChingInput:
+      type: object
+      properties:
+        question:
+          type: string
+          description: Optional question or intention for the reading
+
+    IChingHexagram:
+      type: object
+      required: [number, nameZh, namePinyin, nameEn, lines, judgment]
+      properties:
+        number:
+          type: integer
+          minimum: 1
+          maximum: 64
+        nameZh:
+          type: string
+        namePinyin:
+          type: string
+        nameEn:
+          type: string
+        lines:
+          type: array
+          items:
+            type: integer
+            enum: [0, 1]
+          minItems: 6
+          maxItems: 6
+        judgment:
+          type: string
+
+    IChingResult:
+      type: object
+      required: [primaryHexagram, changingLines, resultingHexagram, interpretation]
+      properties:
+        primaryHexagram:
+          $ref: '#/components/schemas/IChingHexagram'
+        changingLines:
+          type: array
+          items:
+            type: integer
+        resultingHexagram:
+          oneOf:
+            - $ref: '#/components/schemas/IChingHexagram'
+            - type: "null"
+        interpretation:
+          type: array
+          items:
+            type: string
+        question:
+          type: string
+
+    RuneInput:
+      type: object
+      properties:
+        question:
+          type: string
+          description: Optional question to focus the rune reading
+
+    RuneEntry:
+      type: object
+      required: [number, name, letter, symbol, nameEn, meaning, keywords, polarity, domain]
+      properties:
+        number:
+          type: integer
+          minimum: 1
+          maximum: 25
+        name:
+          type: string
+          description: Rune name (e.g. "Fehu")
+        letter:
+          type: string
+          description: Phonetic value (e.g. "F")
+        symbol:
+          type: string
+          description: Runic Unicode symbol (e.g. "ᚠ")
+        nameEn:
+          type: string
+          description: English keyword (e.g. "Cattle / Wealth")
+        meaning:
+          type: string
+          description: Divinatory interpretation
+        keywords:
+          type: array
+          items:
+            type: string
+          minItems: 3
+          maxItems: 5
+        polarity:
+          type: string
+          enum: [auspicious, challenging, neutral]
+        domain:
+          type: string
+          enum: [career, finance, love, health, general]
+
+    DrawnRune:
+      type: object
+      required: [position, rune]
+      properties:
+        position:
+          type: string
+          enum: [past, present, future]
+        rune:
+          $ref: '#/components/schemas/RuneEntry'
+
+    RuneResult:
+      type: object
+      required: [drawnRunes, interpretation]
+      properties:
+        drawnRunes:
+          type: array
+          items:
+            $ref: '#/components/schemas/DrawnRune'
+          minItems: 3
+          maxItems: 3
+        interpretation:
+          type: array
+          items:
+            type: string
+        question:
+          type: string
 
     ErrorResponse:
       type: object

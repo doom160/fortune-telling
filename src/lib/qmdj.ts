@@ -4,7 +4,7 @@ import { DateTime } from "luxon";
 // ─── Types ─────────────────────────────────────────────────────────────
 
 export type QmdjMode = "time" | "year";
-export type QmdjFocus = "general" | "career" | "wealth" | "relationship" | "health" | "travel" | "legal";
+export type QmdjFocus = "general" | "career" | "finance" | "love" | "health";
 
 export interface QmdjInput {
   mode: QmdjMode;
@@ -745,11 +745,9 @@ const DEITY_MEANINGS: Record<string, string> = {
 const FOCUS_GATE_MAP: Record<QmdjFocus, string[]> = {
   general: ["開門", "生門", "休門"],
   career: ["開門", "景門"],
-  wealth: ["生門", "開門"],
-  relationship: ["休門", "六合"],
+  finance: ["生門", "開門"],
+  love: ["休門", "六合"],
   health: ["天心", "生門"],
-  travel: ["開門", "休門", "生門"],
-  legal: ["開門", "驚門"],
 };
 
 // ─── Interpretation Builder ───────────────────────────────────────────
@@ -850,8 +848,8 @@ function buildInterpretation(
   // Section 7: Focus Area Reading
   lines.push("## Focus Area Reading / 專項分析");
   const focusLabel: Record<QmdjFocus, string> = {
-    general: "General Outlook", career: "Career & Business", wealth: "Wealth & Finance",
-    relationship: "Relationships & Love", health: "Health & Wellbeing", travel: "Travel & Movement", legal: "Legal & Disputes",
+    general: "General Outlook", career: "Career & Business", finance: "Finance & Wealth",
+    love: "Love & Relationships", health: "Health & Wellbeing",
   };
   const focus = input.focus ?? "general";
   lines.push(`Focus: ${focusLabel[focus]}`);

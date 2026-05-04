@@ -11,7 +11,6 @@ import {
 import { MethodologyModal } from "@/components/MethodologyModal";
 
 type FormState = {
-  name: string;
   birthDate: string;
   birthTime: string;
   gender: "male" | "female";
@@ -38,7 +37,6 @@ const TIMEZONE_OPTIONS = [
 ];
 
 const EMPTY_FORM: FormState = {
-  name: "",
   birthDate: "",
   birthTime: "12:00",
   gender: "female",
@@ -61,7 +59,6 @@ export default function ZiWeiPage() {
 
     try {
       const result = calculateZiWei({
-        name: form.name.trim() || undefined,
         birthDate: form.birthDate,
         birthTime: form.birthTime,
         gender: form.gender,
@@ -83,7 +80,7 @@ export default function ZiWeiPage() {
   async function handleExportPDF() {
     if (!chart || !resultPanelRef.current) return;
     try {
-      const fileName = form.name.trim() ? `${form.name.trim()}-ziwei.pdf` : "ziwei-reading.pdf";
+      const fileName = "ziwei-reading.pdf";
       await exportReadingAsPDF(resultPanelRef.current, fileName);
     } catch (err) {
       console.error("Zi Wei PDF export failed:", err);
@@ -93,7 +90,7 @@ export default function ZiWeiPage() {
 
   function handleShareText() {
     if (!chart) return;
-    const text = generateZiWeiShareableText(chart, form.name.trim() || undefined);
+    const text = generateZiWeiShareableText(chart);
     const success = copyToClipboard(text);
     if (success) {
       setCopySuccess(true);
@@ -119,16 +116,6 @@ export default function ZiWeiPage() {
       <section className="workspace-grid">
         <form className="panel" onSubmit={handleSubmit}>
           <h2>Birth Profile / 出生资料</h2>
-
-          <label>
-            Name / 姓名 (optional)
-            <input
-              type="text"
-              value={form.name}
-              onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
-              placeholder="e.g. Mei Ling"
-            />
-          </label>
 
           <label>
             Date of Birth / 生日

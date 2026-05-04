@@ -6,7 +6,6 @@ import { generateShareableText, copyToClipboard, exportReadingAsPDF } from "@/li
 import { MethodologyModal } from "@/components/MethodologyModal";
 
 type FormState = {
-  name: string;
   birthDate: string;
   birthTime: string;
   gender: "Female" | "Male";
@@ -47,7 +46,6 @@ const ELEMENT_COLORS: Record<string, string> = {
 };
 
 const EMPTY_FORM: FormState = {
-  name: "",
   birthDate: "",
   birthTime: "",
   gender: "Female",
@@ -92,7 +90,6 @@ export default function BaziPage() {
 
     try {
       const result = calculateBazi({
-        name: form.name.trim() || undefined,
         gender: form.gender,
         birthDate: form.birthDate,
         birthTime: form.birthTime || undefined,
@@ -112,7 +109,7 @@ export default function BaziPage() {
   async function handleExportPDF() {
     if (!chart || !resultPanelRef.current) return;
     try {
-      const fileName = form.name.trim() ? `${form.name.trim()}-bazi.pdf` : "bazi-reading.pdf";
+      const fileName = "bazi-reading.pdf";
       await exportReadingAsPDF(resultPanelRef.current, fileName);
     } catch (err) {
       console.error("PDF export failed:", err);
@@ -122,7 +119,7 @@ export default function BaziPage() {
 
   function handleShareText() {
     if (!chart) return;
-    const text = generateShareableText(chart, form.name.trim() || undefined);
+    const text = generateShareableText(chart);
     const success = copyToClipboard(text);
     if (success) {
       setCopySuccess(true);
@@ -147,16 +144,6 @@ export default function BaziPage() {
       <section className="workspace-grid">
         <form className="panel" onSubmit={handleSubmit}>
           <h2>Birth Profile / 出生资料</h2>
-          <label>
-            Name / 姓名 (optional)
-            <input
-              type="text"
-              value={form.name}
-              onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
-              placeholder="e.g. Mei Ling"
-            />
-          </label>
-
           <label>
             Date of Birth / 生日
             <input

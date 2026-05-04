@@ -33,6 +33,8 @@ const SYSTEMS = [
   { id: "tarot", href: "/tarot", zh: "塔羅牌", en: "Tarot", sub: "Archetypal Wisdom", tags: ["Western", "Guidance"] },
   { id: "numerology", href: "/numerology", zh: "數理", en: "Mystic Numbers", sub: "East-West Numerology", tags: ["East-West", "Personality"] },
   { id: "astrology", href: "/astrology", zh: "星盤", en: "Western Astrology", sub: "Natal Chart & Transits", tags: ["Western", "Forecast"] },
+  { id: "iching", href: "/iching", zh: "易經", en: "I Ching", sub: "Hexagram Oracle", tags: ["Chinese"] },
+  { id: "rune", href: "/rune", zh: "ᚠᚢᚦ", en: "Norse Runes", sub: "Elder Futhark Oracle", tags: ["Norse"] },
   { id: "oracle", href: "/oracle", zh: "合一神諭", en: "Oracle", sub: "Cross-System Unified Reading", tags: ["All Systems", "Synthesis"] },
 ];
 

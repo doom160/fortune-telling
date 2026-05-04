@@ -3525,6 +3525,10 @@ button:hover {
   min-height: 90px;
 }
 
+.oracle-question-form__select {
+  width: 100%;
+}
+
 .oracle-question-form__submit {
   align-self: flex-start;
 }
@@ -4081,5 +4085,380 @@ button:hover {
   color: var(--muted);
   margin: 0;
   line-height: 1.55;
+}
+
+/* ─── I Ching ──────────────────────────── */
+
+.iching-hexagram {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 1rem auto;
+  width: fit-content;
+}
+
+.iching-line {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 120px;
+  position: relative;
+}
+
+.iching-line__bar {
+  height: 8px;
+  width: 100%;
+  background: var(--foreground);
+  border-radius: 2px;
+}
+
+.iching-line--yin {
+  gap: 6px;
+}
+
+.iching-line__half {
+  height: 8px;
+  width: calc(50% - 3px);
+  background: var(--foreground);
+  border-radius: 2px;
+}
+
+.iching-line--changing .iching-line__bar,
+.iching-line--changing .iching-line__half {
+  background: var(--gold);
+}
+
+.iching-line__marker {
+  position: absolute;
+  right: -1.2rem;
+  font-size: 0.75rem;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.iching-result {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.iching-question-display {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+.iching-name {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.iching-name__zh {
+  font-family: var(--font-display), serif;
+  font-size: 2rem;
+  color: var(--gold);
+}
+
+.iching-name__pinyin {
+  font-size: 1rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.iching-name__en {
+  font-size: 1rem;
+  color: var(--foreground);
+}
+
+.iching-name--secondary .iching-name__zh {
+  font-size: 1.4rem;
+}
+
+.iching-judgment h4,
+.iching-image-text h4,
+.iching-changing-lines h4,
+.iching-resulting h4 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+  margin: 0 0 0.4rem;
+}
+
+.iching-judgment__en {
+  font-size: 0.95rem;
+  color: var(--foreground);
+  margin: 0 0 0.2rem;
+  line-height: 1.6;
+}
+
+.iching-judgment__zh {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin: 0;
+  font-style: italic;
+}
+
+.iching-changing-lines {
+  border-top: 1px solid var(--panel-border);
+  padding-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.iching-line-text {
+  padding: 0.6rem 0.75rem;
+  border-left: 3px solid var(--panel-border);
+  background: var(--panel-bg);
+}
+
+.iching-line-text--auspicious {
+  border-left-color: var(--wood);
+}
+
+.iching-line-text--inauspicious {
+  border-left-color: var(--fire);
+}
+
+.iching-line-text__label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.iching-line-text__en {
+  font-size: 0.88rem;
+  color: var(--foreground);
+  margin: 0 0 0.15rem;
+  line-height: 1.55;
+}
+
+.iching-line-text__zh {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin: 0;
+  font-style: italic;
+}
+
+.iching-resulting {
+  border-top: 1px solid var(--panel-border);
+  padding-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.iching-oracle-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.iching-oracle-card__hexagram {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.iching-oracle-card__zh {
+  font-family: var(--font-display), serif;
+  font-size: 1.5rem;
+  color: var(--gold);
+}
+
+.iching-oracle-card__pinyin {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.iching-oracle-card__en {
+  font-size: 0.85rem;
+  color: var(--foreground);
+}
+
+.iching-oracle-card__judgment {
+  font-size: 0.85rem;
+  color: var(--foreground);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.iching-oracle-card__changing {
+  font-size: 0.78rem;
+  color: var(--gold);
+  margin: 0;
+}
+
+.oracle-systems-grid--directions {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+/* ─── Norse Rune Standalone Page ─────────────────────────────────────────────*/
+
+.rune-result {
+  padding: 2rem var(--page-gutter, 1.5rem);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.rune-draw {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 640px) {
+  .rune-draw {
+    grid-template-columns: 1fr;
+  }
+}
+
+.rune-card {
+  background: var(--card-bg, rgba(255,255,255,0.04));
+  border: 1px solid var(--border, rgba(255,255,255,0.1));
+  border-radius: 10px;
+  padding: 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.rune-card__position {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--gold, #c9a84c);
+  font-weight: 600;
+}
+
+.rune-card__symbol {
+  font-size: 2.5rem;
+  line-height: 1;
+  color: var(--gold, #c9a84c);
+}
+
+.rune-card__letter {
+  font-size: 0.75rem;
+  color: var(--foreground-muted, rgba(232,223,200,0.55));
+  font-style: italic;
+}
+
+.rune-card__name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.rune-card__nameen {
+  font-size: 0.82rem;
+  color: var(--foreground-muted, rgba(232,223,200,0.65));
+}
+
+.rune-card__meaning {
+  font-size: 0.82rem;
+  color: var(--foreground);
+  line-height: 1.6;
+  margin: 0.4rem 0 0;
+}
+
+.rune-card__keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+}
+
+.rune-card__keyword-tag {
+  font-size: 0.68rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.07);
+  color: var(--foreground-muted, rgba(232,223,200,0.7));
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.rune-card__polarity {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  margin-top: 0.4rem;
+}
+
+.rune-card__polarity--auspicious { color: var(--green, #6fcf97); }
+.rune-card__polarity--challenging { color: var(--red, #eb5757); }
+.rune-card__polarity--neutral { color: var(--foreground-muted, rgba(232,223,200,0.55)); }
+
+.rune-interpretation {
+  border-top: 1px solid var(--border, rgba(255,255,255,0.08));
+  padding-top: 1.25rem;
+}
+
+.rune-interpretation p {
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: var(--foreground);
+  margin: 0 0 0.65rem;
+}
+
+/* ─── Norse Rune Oracle Card (Life Directions) ───────────────────────────────*/
+
+.rune-oracle-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.rune-oracle-card__row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.rune-oracle-card__row--present {
+  font-weight: 600;
+}
+
+.rune-oracle-card__pos {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gold, #c9a84c);
+  min-width: 3.5rem;
+}
+
+.rune-oracle-card__symbol {
+  font-size: 1.1rem;
+  color: var(--gold, #c9a84c);
+}
+
+.rune-oracle-card__name {
+  font-size: 0.88rem;
+  color: var(--foreground);
+}
+
+.rune-oracle-card__nameen {
+  font-size: 0.75rem;
+  color: var(--foreground-muted, rgba(232,223,200,0.6));
+}
+
+.rune-oracle-card__present-meaning {
+  font-size: 0.8rem;
+  color: var(--foreground);
+  line-height: 1.55;
+  margin: 0.3rem 0 0;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border, rgba(255,255,255,0.07));
 }
 

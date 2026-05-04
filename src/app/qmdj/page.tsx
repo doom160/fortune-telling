@@ -3,10 +3,8 @@
 import { FormEvent, useRef, useState } from "react";
 import {
   calculateTimeQmdj,
-  calculateYearQmdj,
   QmdjChart,
   QmdjFocus,
-  QmdjMode,
   Palace,
   Formation,
 } from "@/lib/qmdj";
@@ -14,48 +12,19 @@ import { copyToClipboard, exportReadingAsPDF } from "@/lib/pdf-export";
 import { MethodologyModal } from "@/components/MethodologyModal";
 
 type FormState = {
-  mode: QmdjMode;
-  birthDate: string;
-  birthTime: string;
-  timeZone: string;
-  year: string;
   question: string;
   focus: QmdjFocus;
 };
 
-const TIMEZONE_OPTIONS = [
-  { label: "Kuala Lumpur (UTC+08)", value: "Asia/Kuala_Lumpur" },
-  { label: "Singapore (UTC+08)", value: "Asia/Singapore" },
-  { label: "Jakarta (UTC+07)", value: "Asia/Jakarta" },
-  { label: "Bangkok (UTC+07)", value: "Asia/Bangkok" },
-  { label: "Shanghai (UTC+08)", value: "Asia/Shanghai" },
-  { label: "Hong Kong (UTC+08)", value: "Asia/Hong_Kong" },
-  { label: "Taipei (UTC+08)", value: "Asia/Taipei" },
-  { label: "Seoul (UTC+09)", value: "Asia/Seoul" },
-  { label: "Tokyo (UTC+09)", value: "Asia/Tokyo" },
-  { label: "Sydney (UTC+10)", value: "Australia/Sydney" },
-  { label: "London (UTC+00/01)", value: "Europe/London" },
-  { label: "New York (UTC-05/04)", value: "America/New_York" },
-  { label: "Los Angeles (UTC-08/07)", value: "America/Los_Angeles" },
-  { label: "UTC", value: "UTC" },
-];
-
 const FOCUS_OPTIONS: { label: string; value: QmdjFocus }[] = [
   { label: "General / 綜合", value: "general" },
   { label: "Career / 事業", value: "career" },
-  { label: "Wealth / 財運", value: "wealth" },
-  { label: "Relationship / 感情", value: "relationship" },
+  { label: "Finance / 財運", value: "finance" },
+  { label: "Love & Relationship / 感情", value: "love" },
   { label: "Health / 健康", value: "health" },
-  { label: "Travel / 出行", value: "travel" },
-  { label: "Legal / 訴訟", value: "legal" },
 ];
 
 const EMPTY_FORM: FormState = {
-  mode: "time",
-  birthDate: "",
-  birthTime: "",
-  timeZone: "Asia/Kuala_Lumpur",
-  year: "",
   question: "",
   focus: "general",
 };
@@ -79,30 +48,18 @@ export default function QmdjPage() {
     setError("");
 
     try {
-      if (form.mode === "time") {
-        if (!form.birthDate || !form.birthTime) {
-          throw new Error("Time-based mode requires both date and time.");
-        }
-        const result = calculateTimeQmdj({
-          mode: "time",
-          dateTime: `${form.birthDate}T${form.birthTime}`,
-          timeZone: form.timeZone,
-          question: form.question.trim() || undefined,
-          focus: form.focus,
-        });
-        setChart(result);
-      } else {
-        if (!form.year) {
-          throw new Error("Year-based mode requires a year.");
-        }
-        const result = calculateYearQmdj({
-          mode: "year",
-          year: parseInt(form.year, 10),
-          question: form.question.trim() || undefined,
-          focus: form.focus,
-        });
-        setChart(result);
-      }
+      const now = new Date();
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const pad = (n: number) => String(n).padStart(2, "0");
+      const dateTime = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
+      const result = calculateTimeQmdj({
+        mode: "time",
+        dateTime,
+        timeZone: tz,
+        question: form.question.trim() || undefined,
+        focus: form.focus,
+      });
+      setChart(result);
     } catch (submitError) {
       setChart(null);
       setError(
@@ -189,71 +146,9 @@ export default function QmdjPage() {
         <form className="panel" onSubmit={handleSubmit}>
           <h2>Chart Setup / 起盤設定</h2>
 
-          {/* Mode Toggle */}
-          <div className="qmdj-mode-toggle">
-            <button
-              type="button"
-              className={`qmdj-mode-btn ${form.mode === "time" ? "qmdj-mode-btn--active" : ""}`}
-              onClick={() => setForm((prev) => ({ ...prev, mode: "time" }))}
-            >
-              時家 Time-Based
-            </button>
-            <button
-              type="button"
-              className={`qmdj-mode-btn ${form.mode === "year" ? "qmdj-mode-btn--active" : ""}`}
-              onClick={() => setForm((prev) => ({ ...prev, mode: "year" }))}
-            >
-              年家 Year-Based
-            </button>
-          </div>
-
-          {form.mode === "time" ? (
-            <>
-              <label>
-                Date / 日期
-                <input
-                  type="date"
-                  value={form.birthDate}
-                  onChange={(e) => setForm((prev) => ({ ...prev, birthDate: e.target.value }))}
-                  required
-                />
-              </label>
-              <label>
-                Time / 時間
-                <input
-                  type="time"
-                  value={form.birthTime}
-                  onChange={(e) => setForm((prev) => ({ ...prev, birthTime: e.target.value }))}
-                  required
-                />
-              </label>
-              <label>
-                Timezone / 時區
-                <select
-                  value={form.timeZone}
-                  onChange={(e) => setForm((prev) => ({ ...prev, timeZone: e.target.value }))}
-                  required
-                >
-                  {TIMEZONE_OPTIONS.map((z) => (
-                    <option key={z.value} value={z.value}>{z.label}</option>
-                  ))}
-                </select>
-              </label>
-            </>
-          ) : (
-            <label>
-              Year / 年份
-              <input
-                type="number"
-                value={form.year}
-                onChange={(e) => setForm((prev) => ({ ...prev, year: e.target.value }))}
-                placeholder="e.g. 2026"
-                min={1900}
-                max={2200}
-                required
-              />
-            </label>
-          )}
+          <p className="placeholder" style={{ fontSize: "0.82rem", margin: "0.25rem 0" }}>
+            Using current date &amp; time ({Intl.DateTimeFormat().resolvedOptions().timeZone})
+          </p>
 
           <label>
             Focus Area / 問事類別
@@ -467,13 +362,6 @@ export default function QmdjPage() {
           <li><strong>Inauspicious (凶格):</strong> 門迫 (Gate Pressed), 入墓 (Entombed), 大格, 刑格, 鬼遁</li>
           <li><strong>Structural:</strong> 伏吟 (Hidden Chant — stars return to home palaces), 反吟 (Returning Chant — stars are opposite to home)</li>
         </ul>
-
-        <h3>Year-Based Mode / 年家奇門</h3>
-        <p>
-          A simplified variant that uses only the year stem to determine the Ju number (甲/己→1, 乙/庚→2,
-          丙/辛→3, 丁/壬→4, 戊/癸→5). Useful for assessing the broad energy and direction of an entire year
-          rather than a specific moment.
-        </p>
 
         <div className="note-box">
           <strong>Note:</strong> Solar term boundaries are calculated astronomically using the astronomy-engine

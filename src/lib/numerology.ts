@@ -4,7 +4,6 @@ export interface NumerologyInput {
   name?: string;
   birthDate: string;       // YYYY-MM-DD
   birthTime?: string;      // HH:mm
-  gender: "male" | "female";
 }
 
 export interface LoShuArrow {

@@ -11,7 +11,6 @@ import { DateTime } from "luxon";
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 export type AstrologyInput = {
-  name?: string;
   birthDate: string;        // YYYY-MM-DD
   birthTime?: string;       // HH:mm (optional, defaults to 12:00)
   lat: number;

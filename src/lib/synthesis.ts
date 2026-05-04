@@ -1,4 +1,7 @@
 import type { GuanyinLot } from "@/lib/guanyin";
+import type { IChingReading } from "@/lib/iching";
+import { HEXAGRAM_DOMAIN_MAP } from "@/lib/iching";
+import type { RuneReading } from "@/lib/rune";
 import type { QmdjChart, QmdjFocus } from "@/lib/qmdj";
 import type { TarotReading } from "@/lib/tarot";
 import type { BaziChart, AnnualLuckPillar } from "@/lib/bazi";
@@ -10,7 +13,7 @@ import { getAnimalByIndex, ANIMALS } from "@/lib/zodiac";
 
 // ─── System IDs ──────────────────────────────────────────────────────────────
 
-export type LifeDirectionsSystemId = "guanyin" | "qmdj" | "tarot";
+export type LifeDirectionsSystemId = "guanyin" | "qmdj" | "tarot" | "iching" | "rune";
 export type LifeForecastSystemId = "bazi" | "numerology" | "ziwei" | "zodiac" | "astrology";
 
 // ─── Signal Types ────────────────────────────────────────────────────────────
@@ -466,6 +469,60 @@ export function extractAstrologyYearSignals(transits: TransitAspect[]): Normalis
   const polarity: PolarityValue =
     auspicious > caution ? "auspicious" : caution > auspicious ? "caution" : "mixed";
   signals.push(sig(system, "polarity", polarity));
+
+  return signals;
+}
+
+export function extractIChingSignals(reading: IChingReading): NormalisedSignal[] {
+  const signals: NormalisedSignal[] = [];
+  const system = "iching";
+
+  // Polarity: majority nature of changing line texts
+  const changingNatures = reading.changingLines.map(
+    (i) => reading.primaryHexagram.linesText[i].nature
+  );
+  let polarity: PolarityValue = "mixed";
+  if (changingNatures.length > 0) {
+    const auspicious = changingNatures.filter((n) => n === "auspicious").length;
+    const inauspicious = changingNatures.filter((n) => n === "inauspicious").length;
+    polarity = auspicious > inauspicious ? "auspicious" : inauspicious > auspicious ? "caution" : "mixed";
+  }
+  signals.push(sig(system, "polarity", polarity));
+
+  // Domain: from hexagram domain map
+  const domain = HEXAGRAM_DOMAIN_MAP[reading.primaryHexagram.number] ?? "general";
+  if (domain !== "general") {
+    signals.push(sig(system, "domain", domain));
+  }
+
+  // Keyword: hexagram English name (lowercased, hyphenated)
+  const keyword = reading.primaryHexagram.nameEn.toLowerCase().replace(/\s+/g, "-");
+  signals.push(sig(system, "keyword", keyword));
+
+  return signals;
+}
+
+export function extractRuneSignals(reading: RuneReading): NormalisedSignal[] {
+  const signals: NormalisedSignal[] = [];
+  const system = "rune";
+
+  // Polarity: majority vote across three drawn runes
+  const polarities = reading.drawnRunes.map((d) => d.rune.polarity);
+  const auspicious = polarities.filter((p) => p === "auspicious").length;
+  const challenging = polarities.filter((p) => p === "challenging").length;
+  const polarity: PolarityValue =
+    auspicious > challenging ? "auspicious" : challenging > auspicious ? "caution" : "mixed";
+  signals.push(sig(system, "polarity", polarity));
+
+  // Domain + keyword from present-position (center) rune
+  const presentRune = reading.drawnRunes.find((d) => d.position === "present")?.rune;
+  if (presentRune) {
+    if (presentRune.domain !== "general") {
+      signals.push(sig(system, "domain", presentRune.domain));
+    }
+    const keyword = presentRune.nameEn.toLowerCase().replace(/\s*\/\s*/g, "-").replace(/\s+/g, "-");
+    signals.push(sig(system, "keyword", keyword));
+  }
 
   return signals;
 }

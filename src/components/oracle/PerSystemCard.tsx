@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 
-type Tradition = "Chinese" | "Western" | "East-West";
+type Tradition = "Chinese" | "Western" | "East-West" | "Norse";
 
 type Props = {
   systemId: string;
@@ -17,6 +17,7 @@ const TRADITION_LABELS: Record<Tradition, string> = {
   Chinese: "Chinese",
   Western: "Western",
   "East-West": "East-West",
+  Norse: "Norse",
 };
 
 export function PerSystemCard({ nameZh, nameEn, tradition, notice, children }: Props) {

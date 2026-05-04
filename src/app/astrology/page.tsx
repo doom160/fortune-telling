@@ -8,7 +8,6 @@ import { NatalWheelSVG } from "@/components/NatalWheelSVG";
 import { MethodologyModal } from "@/components/MethodologyModal";
 
 type FormState = {
-  name: string;
   birthDate: string;
   birthTime: string;
   cityQuery: string;
@@ -16,7 +15,6 @@ type FormState = {
 };
 
 const EMPTY_FORM: FormState = {
-  name: "",
   birthDate: "",
   birthTime: "",
   cityQuery: "",
@@ -85,7 +83,6 @@ export default function AstrologyPage() {
 
     try {
       const result = calculateNatalChart({
-        name: form.name.trim() || undefined,
         birthDate: form.birthDate,
         birthTime: form.birthTime || undefined,
         lat: form.selectedCity.lat,
@@ -102,8 +99,7 @@ export default function AstrologyPage() {
   async function handleExportPDF() {
     if (!chart || !resultPanelRef.current) return;
     try {
-      const fileName = form.name.trim() ? `${form.name.trim()}-natal-chart.pdf` : "natal-chart.pdf";
-      await exportReadingAsPDF(resultPanelRef.current, fileName);
+      await exportReadingAsPDF(resultPanelRef.current, "natal-chart.pdf");
     } catch (err) {
       console.error("PDF export failed:", err);
     }
@@ -115,7 +111,6 @@ export default function AstrologyPage() {
     lines.push("═══════════════════════════════════");
     lines.push("  星盤 Western Astrology — Natal Chart");
     lines.push("═══════════════════════════════════");
-    if (chart.input.name) lines.push(`Name: ${chart.input.name}`);
     lines.push(`Birth: ${chart.input.birthDate} ${chart.input.birthTime || "12:00 (noon)"}`);
     lines.push(`Location: ${form.cityQuery}`);
     lines.push("");
@@ -167,16 +162,6 @@ export default function AstrologyPage() {
       <section className="workspace-grid">
         <form className="panel" onSubmit={handleSubmit}>
           <h2>Birth Profile / 出生資料</h2>
-
-          <label>
-            Name / 姓名 (optional)
-            <input
-              type="text"
-              value={form.name}
-              onChange={e => setForm(prev => ({ ...prev, name: e.target.value }))}
-              placeholder="e.g. Mei Ling"
-            />
-          </label>
 
           <label>
             Date of Birth / 生日
