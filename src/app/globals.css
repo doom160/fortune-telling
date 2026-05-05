@@ -39,6 +39,50 @@ h1, h2, h3, h4 {
   margin: 0;
 }
 
+/* ─── Splash Screen ─────────────────────────── */
+
+@keyframes splash-scale-in {
+  from { opacity: 0; transform: scale(0.82); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes splash-orbit {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes splash-pulse-glow {
+  0%, 100% { filter: drop-shadow(0 0 18px rgba(180, 136, 46, 0.35)); }
+  50%       { filter: drop-shadow(0 0 42px rgba(180, 136, 46, 0.7)); }
+}
+
+.splash-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #0a0812;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  transition: opacity 0.5s ease-out;
+  pointer-events: all;
+}
+
+.splash-overlay.splash-fading {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.splash-overlay img {
+  width: min(90vw, 90vh);
+  height: min(90vw, 90vh);
+  animation:
+    splash-scale-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both,
+    splash-orbit 12s linear infinite,
+    splash-pulse-glow 2s ease-in-out infinite;
+}
+
 /* ─── Stars & Orbs ──────────────────────────── */
 
 .stars-field {
@@ -3992,6 +4036,57 @@ button:hover {
   line-height: 1.55;
 }
 
+.numerology-oracle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+}
+
+.numerology-oracle-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.6rem 0.4rem;
+  border: 1px solid var(--panel-border);
+  background: var(--surface);
+  text-align: center;
+}
+
+.numerology-oracle-cell__num {
+  font-family: var(--font-display), serif;
+  font-size: 1.6rem;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.numerology-oracle-cell__label {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--foreground);
+  font-family: var(--font-body), serif;
+}
+
+.numerology-oracle-cell__zh {
+  font-size: 0.6rem;
+  color: var(--muted-dim);
+}
+
+.numerology-oracle-cell__keyword {
+  font-size: 0.6rem;
+  color: var(--gold);
+  font-style: italic;
+  margin-top: 0.1rem;
+}
+
+.numerology-summary__element {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin: 0;
+}
+
 /* System card body content — Zi Wei */
 
 .ziwei-summary {
@@ -4302,12 +4397,55 @@ button:hover {
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 }
 
+/* ─── Oracle Tab Bar ─────────────────────── */
+
+.oracle-tab-bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--panel-border);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.oracle-tab-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.oracle-tab {
+  padding: 0.55rem 1.15rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: var(--font-body), serif;
+  color: var(--muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+  margin-bottom: -1px;
+}
+
+.oracle-tab:hover {
+  color: var(--foreground);
+}
+
+.oracle-tab--active {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+
+.oracle-tab-panel {
+  padding-top: 1.5rem;
+}
+
 /* ─── Norse Rune Standalone Page ─────────────────────────────────────────────*/
 
 .rune-result {
-  padding: 2rem var(--page-gutter, 1.5rem);
-  max-width: 900px;
-  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .rune-draw {

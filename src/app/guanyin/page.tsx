@@ -7,6 +7,7 @@ import {
   GUANYIN_MAX_LOT,
   GuanyinReading,
 } from "@/lib/guanyin";
+import { MethodologyModal } from "@/components/MethodologyModal";
 
 type FormState = {
   question: string;
@@ -24,6 +25,7 @@ export default function GuanyinPage() {
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [reading, setReading] = useState<GuanyinReading | null>(null);
   const [error, setError] = useState("");
+  const [showMethodology, setShowMethodology] = useState(false);
 
   function handleDraw(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -56,6 +58,9 @@ export default function GuanyinPage() {
           Draw a Guanyin lot to receive a poetic sign, practical guidance, and a focused reading
           for career, finance, love, and health.
         </p>
+        <button type="button" className="methodology-trigger" onClick={() => setShowMethodology(true)}>
+          How It Works
+        </button>
       </section>
 
       <section className="workspace-grid">
@@ -166,6 +171,71 @@ export default function GuanyinPage() {
           )}
         </section>
       </section>
+
+      <MethodologyModal isOpen={showMethodology} onClose={() => setShowMethodology(false)} title="How Guan Yin Divination Works / 觀音靈籤原理">
+        <h3>Overview</h3>
+        <p>
+          Guan Yin Divination (觀音靈籤) is a Chinese oracular tradition associated with Guan Yin
+          (觀世音菩薩), the Bodhisattva of Compassion. Practiced for over a thousand years in Buddhist
+          temples across China, Taiwan, and Southeast Asia, it uses a set of numbered lots (籤) — each
+          containing a poem and practical guidance — to respond to a seeker&apos;s question.
+        </p>
+
+        <h3>The Lot System</h3>
+        <p>
+          A traditional set contains <strong>{GUANYIN_MAX_LOT} lots</strong>, numbered 1 through {GUANYIN_MAX_LOT}.
+          In a temple, the seeker holds a bamboo tube containing numbered sticks, shakes it gently while
+          focusing on their question, and allows one stick to fall out. The number on that stick identifies
+          the lot.
+        </p>
+        <p>
+          This application simulates the draw by randomly selecting a lot, or allows you to enter a
+          specific lot number if you have already cast physically.
+        </p>
+
+        <h3>Lot Outcomes</h3>
+        <p>
+          Each lot is classified by its overall quality:
+        </p>
+        <table>
+          <thead>
+            <tr><th>Outcome</th><th>Meaning</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Good (吉)</td><td>Favourable energy — proceed with confidence</td></tr>
+            <tr><td>Average (平)</td><td>Mixed energy — proceed with care and discernment</td></tr>
+            <tr><td>Caution (凶)</td><td>Challenging energy — pause, reflect, and reconsider</td></tr>
+          </tbody>
+        </table>
+        <p>
+          A &quot;Caution&quot; outcome is not a curse — it is a warning to slow down and examine the situation
+          more carefully. Many practitioners believe a cautious lot answered honestly is more valuable
+          than a favourable one ignored.
+        </p>
+
+        <h3>The Poem and Its Guidance</h3>
+        <p>
+          Each lot contains a four-line classical Chinese poem (籤詩). The poem speaks in metaphor and
+          allegory, drawing on historical stories, nature imagery, and moral lessons. It is interpreted
+          in relation to the seeker&apos;s specific question and focus area.
+        </p>
+        <p>
+          Beneath the poem, each lot provides specific guidance for four life domains:
+          <strong> Career</strong>, <strong>Finance</strong>, <strong>Love</strong>, and <strong>Health</strong> —
+          allowing the same lot to give relevant advice across different areas of life.
+        </p>
+
+        <h3>Focus Areas</h3>
+        <p>
+          Selecting a focus area before drawing does not change which lot is selected — it shapes
+          how the poem&apos;s imagery is interpreted and which domain guidance is most relevant to your inquiry.
+        </p>
+
+        <div className="note-box">
+          <strong>Note:</strong> This reading is for self-reflection and guidance. Approach the poem
+          with an open mind — the meaning that resonates with you personally is often the most relevant.
+        </div>
+      </MethodologyModal>
     </main>
   );
 }

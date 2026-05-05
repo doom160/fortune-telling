@@ -37,9 +37,22 @@ export default function AstrologyPage() {
   const [showMethodology, setShowMethodology] = useState(false);
   const [cityResults, setCityResults] = useState<City[]>([]);
   const [showCityDropdown, setShowCityDropdown] = useState(false);
+  const [showSplash, setShowSplash] = useState(false);
+  const [splashFading, setSplashFading] = useState(false);
   const resultPanelRef = useRef<HTMLDivElement>(null);
   const cityDropdownRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const splashTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  function triggerSplash() {
+    splashTimersRef.current.forEach(clearTimeout);
+    setSplashFading(false);
+    setShowSplash(true);
+    splashTimersRef.current = [
+      setTimeout(() => setSplashFading(true), 1500),
+      setTimeout(() => setShowSplash(false), 2000),
+    ];
+  }
 
   const handleCitySearch = useCallback((query: string) => {
     setForm(prev => ({ ...prev, cityQuery: query, selectedCity: null }));
@@ -90,6 +103,7 @@ export default function AstrologyPage() {
         timeZone: form.selectedCity.tz,
       });
       setChart(result);
+      triggerSplash();
     } catch (err) {
       setChart(null);
       setError(err instanceof Error ? err.message : "Something went wrong while generating your chart.");
@@ -146,6 +160,12 @@ export default function AstrologyPage() {
   }
 
   return (
+    <>
+      {showSplash && (
+        <div className={`splash-overlay${splashFading ? " splash-fading" : ""}`}>
+          <img src="/animation/celestial_galaxy_splash_v3.svg" alt="" aria-hidden="true" />
+        </div>
+      )}
     <main className="page-shell">
       <section className="hero-panel">
         <div className="hero-zh">星盤</div>
@@ -450,6 +470,7 @@ export default function AstrologyPage() {
         </div>
       </MethodologyModal>
     </main>
+    </>
   );
 }
 

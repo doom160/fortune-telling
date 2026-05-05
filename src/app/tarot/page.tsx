@@ -10,6 +10,7 @@ import {
   getSpreadPositionLabel,
   performTarotReading,
 } from "@/lib/tarot";
+import { MethodologyModal } from "@/components/MethodologyModal";
 
 type FormState = {
   spreadType: TarotSpread;
@@ -23,6 +24,7 @@ export default function TarotPage() {
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [reading, setReading] = useState<TarotReading | null>(null);
   const [error, setError] = useState<string>("");
+  const [showMethodology, setShowMethodology] = useState(false);
   const resultPanelRef = useRef<HTMLDivElement>(null);
   const currentSpreadDefinition = getSpreadDefinition(form.spreadType);
 
@@ -53,6 +55,9 @@ export default function TarotPage() {
           Draw cards to seek guidance and reflection. Choose your preferred spread and let the
           ancient wisdom of the cards speak to your questions.
         </p>
+        <button type="button" className="methodology-trigger" onClick={() => setShowMethodology(true)}>
+          How It Works
+        </button>
       </section>
 
       <section className="workspace-grid">
@@ -256,6 +261,85 @@ export default function TarotPage() {
           )}
         </section>
       </section>
+
+      <MethodologyModal isOpen={showMethodology} onClose={() => setShowMethodology(false)} title="How Tarot Works / 塔羅牌原理">
+        <h3>Overview</h3>
+        <p>
+          Tarot is a symbolic system of 78 cards used for reflection, guidance, and self-exploration.
+          Originating in 15th-century Europe as playing cards, the deck was later adopted by esoteric
+          traditions as a tool for divination. Each card carries layered symbolism drawn from mythology,
+          astrology, numerology, and Kabbalah.
+        </p>
+
+        <h3>The 78-Card Deck</h3>
+        <p>
+          The deck is divided into two sections:
+        </p>
+        <table>
+          <thead>
+            <tr><th>Section</th><th>Cards</th><th>Themes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Major Arcana</td><td>22 (0–XXI)</td><td>Archetypal life themes, soul lessons, major forces</td></tr>
+            <tr><td>Minor Arcana</td><td>56 (4 suits × 14)</td><td>Day-to-day events, practical situations, people</td></tr>
+          </tbody>
+        </table>
+        <p>
+          The <strong>Major Arcana</strong> (The Fool through The World) represent the major chapters of a
+          life journey. When they appear, the energy they carry tends to be significant or transformative.
+        </p>
+        <p>
+          The <strong>Minor Arcana</strong> is divided into four suits, each associated with an element and
+          life domain:
+        </p>
+        <table>
+          <thead>
+            <tr><th>Suit</th><th>Element</th><th>Domain</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Wands</td><td>Fire</td><td>Passion, creativity, ambition, career</td></tr>
+            <tr><td>Cups</td><td>Water</td><td>Emotions, relationships, intuition, dreams</td></tr>
+            <tr><td>Swords</td><td>Air</td><td>Thought, conflict, truth, communication</td></tr>
+            <tr><td>Pentacles</td><td>Earth</td><td>Material world, finances, body, practicality</td></tr>
+          </tbody>
+        </table>
+        <p>
+          Each suit runs from Ace (1) through 10, followed by four court cards: Page, Knight, Queen, King.
+          Court cards often represent either a person in the seeker&apos;s life or an aspect of their own personality.
+        </p>
+
+        <h3>Upright vs. Reversed</h3>
+        <p>
+          A card drawn <strong>upright</strong> expresses its energy directly and actively.
+          A card drawn <strong>reversed</strong> (inverted) can indicate the energy is blocked, delayed,
+          internalised, or expressing in a more challenging form. Reversed cards are not simply
+          &quot;negative&quot; — they invite deeper examination of where that energy may be stuck or turned inward.
+        </p>
+
+        <h3>Spreads</h3>
+        <p>
+          A spread is a layout that assigns each card position a specific meaning before the cards are drawn:
+        </p>
+        <table>
+          <thead>
+            <tr><th>Spread</th><th>Cards</th><th>Purpose</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Three Card</td><td>3</td><td>Past / Present / Future — versatile general reading</td></tr>
+            <tr><td>Daily Card</td><td>1</td><td>Single guidance card for the day</td></tr>
+            <tr><td>Relationship</td><td>3</td><td>You / Them / Dynamic between you</td></tr>
+            <tr><td>Horseshoe</td><td>7</td><td>Situation, influences, obstacles, path, outcome</td></tr>
+            <tr><td>Career</td><td>5</td><td>Current state, strengths, challenges, advice, outcome</td></tr>
+            <tr><td>Celtic Cross</td><td>10</td><td>Comprehensive deep reading — present, cross, foundation, past, crown, future, self, environment, hopes/fears, outcome</td></tr>
+          </tbody>
+        </table>
+
+        <div className="note-box">
+          <strong>Note:</strong> Cards are shuffled and drawn using a seeded random selection from the full
+          78-card deck. Each reading is independent. Tarot is a tool for reflection — the meaning you draw
+          from a card is often the most relevant interpretation.
+        </div>
+      </MethodologyModal>
     </main>
   );
 }

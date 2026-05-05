@@ -22,6 +22,8 @@ import {
 
 type SystemResult<T> = { status: "idle" } | { status: "ok"; data: T } | { status: "error"; message: string };
 
+type DirectionsTab = "summary" | "guanyin" | "qmdj" | "tarot" | "iching" | "rune";
+
 type State = {
   guanyin: SystemResult<GuanyinReading>;
   qmdj: SystemResult<QmdjChart>;
@@ -50,10 +52,20 @@ const FOCUS_OPTIONS: { label: string; value: QmdjFocus }[] = [
   { label: "Health / 健康", value: "health" },
 ];
 
+const TABS: { id: DirectionsTab; label: string }[] = [
+  { id: "summary", label: "Summary" },
+  { id: "guanyin", label: "Guan Yin" },
+  { id: "qmdj", label: "Qi Men" },
+  { id: "tarot", label: "Tarot" },
+  { id: "iching", label: "I Ching" },
+  { id: "rune", label: "Runes" },
+];
+
 export function LifeDirectionsClient() {
   const [question, setQuestion] = useState("");
   const [focus, setFocus] = useState<QmdjFocus>("general");
   const [state, setState] = useState<State>(INITIAL);
+  const [activeTab, setActiveTab] = useState<DirectionsTab>("summary");
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -61,8 +73,8 @@ export function LifeDirectionsClient() {
     if (!q) return;
 
     setState({ ...INITIAL, isRunning: true });
+    setActiveTab("summary");
 
-    // Each system runs synchronously but isolated — errors in one do not block others
     let guanyinResult: SystemResult<GuanyinReading>;
     let qmdjResult: SystemResult<QmdjChart>;
     let tarotResult: SystemResult<TarotReading>;
@@ -108,29 +120,15 @@ export function LifeDirectionsClient() {
       runeResult = { status: "error", message: err instanceof Error ? err.message : "Norse Rune reading failed." };
     }
 
-    // Build synthesis from whichever systems succeeded
     const systemSignals: Record<string, ReturnType<typeof extractGuanyinSignals>> = {};
-    if (guanyinResult.status === "ok") {
-      systemSignals.guanyin = extractGuanyinSignals(guanyinResult.data.lot);
-    }
-    if (qmdjResult.status === "ok") {
-      systemSignals.qmdj = extractQmdjSignals(qmdjResult.data, focus);
-    }
-    if (tarotResult.status === "ok") {
-      systemSignals.tarot = extractTarotSignals(tarotResult.data);
-    }
-    if (ichingResult.status === "ok") {
-      systemSignals.iching = extractIChingSignals(ichingResult.data);
-    }
-    if (runeResult.status === "ok") {
-      systemSignals.rune = extractRuneSignals(runeResult.data);
-    }
+    if (guanyinResult.status === "ok") systemSignals.guanyin = extractGuanyinSignals(guanyinResult.data.lot);
+    if (qmdjResult.status === "ok") systemSignals.qmdj = extractQmdjSignals(qmdjResult.data, focus);
+    if (tarotResult.status === "ok") systemSignals.tarot = extractTarotSignals(tarotResult.data);
+    if (ichingResult.status === "ok") systemSignals.iching = extractIChingSignals(ichingResult.data);
+    if (runeResult.status === "ok") systemSignals.rune = extractRuneSignals(runeResult.data);
 
     const succeededCount = Object.keys(systemSignals).length;
-    const synthesis =
-      succeededCount >= 2
-        ? synthesiseGroup(systemSignals, 5)
-        : null;
+    const synthesis = succeededCount >= 2 ? synthesiseGroup(systemSignals, 5) : null;
 
     setState({
       guanyin: guanyinResult,
@@ -202,22 +200,40 @@ export function LifeDirectionsClient() {
       </section>
 
       {hasResults && (
-        <>
-          <section className="oracle-systems-grid oracle-systems-grid--directions">
-            <GuanyinCard result={state.guanyin} />
-            <QmdjCard result={state.qmdj} />
-            <TarotCard result={state.tarot} />
-            <IChingCard result={state.iching} />
-            <RuneOracleCard result={state.rune} />
-          </section>
+        <section>
+          <div className="oracle-tab-bar">
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                className={`oracle-tab${activeTab === tab.id ? " oracle-tab--active" : ""}`}
+                onClick={() => setActiveTab(tab.id)}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
 
-          {state.synthesis && (
-            <section className="oracle-synthesis-section">
-              <ThemeOverlapPanel themes={state.synthesis.themes} />
-              <SynthesisedSummary summary={state.synthesis.summary} />
-            </section>
-          )}
-        </>
+          <div className="oracle-tab-panel">
+            {activeTab === "summary" && (
+              state.synthesis ? (
+                <div className="oracle-synthesis-section">
+                  <ThemeOverlapPanel themes={state.synthesis.themes} />
+                  <SynthesisedSummary summary={state.synthesis.summary} />
+                </div>
+              ) : (
+                <p className="placeholder">
+                  Not enough systems succeeded to synthesise a summary.
+                </p>
+              )
+            )}
+            {activeTab === "guanyin" && <GuanyinCard result={state.guanyin} />}
+            {activeTab === "qmdj" && <QmdjCard result={state.qmdj} />}
+            {activeTab === "tarot" && <TarotCard result={state.tarot} />}
+            {activeTab === "iching" && <IChingCard result={state.iching} />}
+            {activeTab === "rune" && <RuneOracleCard result={state.rune} />}
+          </div>
+        </section>
       )}
     </main>
   );
@@ -276,10 +292,12 @@ function QmdjCard({ result }: { result: SystemResult<QmdjChart> }) {
           <span>Ju {chart.juNumber} · {chart.isYangDun ? "Yang" : "Yin"} Dun</span>
           <span>{chart.yuan.charAt(0).toUpperCase() + chart.yuan.slice(1)} Yuan</span>
           <span>{chart.solarTerm.nameZh} {chart.solarTerm.name}</span>
+          {chart.dutyStarName && <span>Duty Star: {chart.dutyStarName}</span>}
+          {chart.dutyGateName && <span>Duty Gate: {chart.dutyGateName}</span>}
         </div>
         {chart.formations.length > 0 && (
           <div className="qmdj-chart__formations">
-            <h4>Formations</h4>
+            <h4>Formations / 格局</h4>
             {chart.formations.map((f, i) => (
               <div key={i} className={`qmdj-formation qmdj-formation--${f.type}`}>
                 <span className="qmdj-formation__name">{f.nameZh} {f.name}</span>
@@ -291,13 +309,39 @@ function QmdjCard({ result }: { result: SystemResult<QmdjChart> }) {
         )}
         {chart.interpretation.length > 0 && (
           <div className="qmdj-chart__interpretation">
-            {chart.interpretation.map((line, i) => (
-              <p key={i}>{line}</p>
-            ))}
+            <QmdjReadingSections lines={chart.interpretation} />
           </div>
         )}
       </div>
     </PerSystemCard>
+  );
+}
+
+function QmdjReadingSections({ lines }: { lines: string[] }) {
+  const sections: { title?: string; paragraphs: string[] }[] = [];
+  let current: { title?: string; paragraphs: string[] } = { paragraphs: [] };
+
+  for (const line of lines) {
+    if (line.startsWith("## ")) {
+      if (current.title || current.paragraphs.length > 0) sections.push(current);
+      current = { title: line.slice(3), paragraphs: [] };
+    } else if (line.trim()) {
+      current.paragraphs.push(line);
+    }
+  }
+  if (current.title || current.paragraphs.length > 0) sections.push(current);
+
+  return (
+    <div className="reading-sections">
+      {sections.map((s, i) => (
+        <details key={i} className="reading-section" open={i < 2}>
+          {s.title && <summary>{s.title}</summary>}
+          <div className="section-body">
+            {s.paragraphs.map((p, j) => <p key={j}>{p}</p>)}
+          </div>
+        </details>
+      ))}
+    </div>
   );
 }
 

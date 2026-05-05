@@ -36,6 +36,8 @@ type SystemResult<T> =
   | { status: "error"; message: string }
   | { status: "skipped"; reason: string };
 
+type ForecastTab = "summary" | "bazi" | "numerology" | "ziwei" | "zodiac" | "astrology" | "timeline";
+
 type ForecastState = {
   bazi: SystemResult<BaziChart>;
   numerology: SystemResult<NumerologyChart>;
@@ -58,14 +60,26 @@ const INITIAL: ForecastState = {
   isRunning: false,
 };
 
+const TABS: { id: ForecastTab; label: string }[] = [
+  { id: "summary", label: "Summary" },
+  { id: "bazi", label: "BaZi" },
+  { id: "numerology", label: "Numerology" },
+  { id: "ziwei", label: "Zi Wei" },
+  { id: "zodiac", label: "Zodiac" },
+  { id: "astrology", label: "Astrology" },
+  { id: "timeline", label: "Timeline" },
+];
+
 export function LifeForecastClient() {
   const [birthDate, setBirthDate] = useState("");
   const [birthTime, setBirthTime] = useState("");
   const [gender, setGender] = useState<"male" | "female" | "">("");
+  const [name, setName] = useState("");
   const [cityQuery, setCityQuery] = useState("");
   const [city, setCity] = useState<City | null>(null);
   const [suggestions, setSuggestions] = useState<City[]>([]);
   const [state, setState] = useState<ForecastState>(INITIAL);
+  const [activeTab, setActiveTab] = useState<ForecastTab>("summary");
   const suggestionTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   function handleCityInput(value: string) {
@@ -92,10 +106,12 @@ export function LifeForecastClient() {
     if (!birthDate || !gender) return;
 
     setState({ ...INITIAL, isRunning: true });
+    setActiveTab("summary");
 
     const hasTime = !!birthTime;
     const hasLocation = !!city;
     const timeForCalc = birthTime || "12:00";
+    const trimmedName = name.trim() || undefined;
 
     let baziResult: SystemResult<BaziChart>;
     let numerologyResult: SystemResult<NumerologyChart>;
@@ -116,7 +132,7 @@ export function LifeForecastClient() {
     }
 
     try {
-      const chart = calculateNumerology({ birthDate });
+      const chart = calculateNumerology({ name: trimmedName, birthDate });
       numerologyResult = { status: "ok", data: chart };
     } catch (err) {
       numerologyResult = { status: "error", message: err instanceof Error ? err.message : "Numerology calculation failed." };
@@ -165,9 +181,7 @@ export function LifeForecastClient() {
     if (baziResult.status === "ok") systemSignals.bazi = extractBaziLifeSignals(baziResult.data);
     if (numerologyResult.status === "ok") systemSignals.numerology = extractNumerologyLifeSignals(numerologyResult.data);
     if (ziweiResult.status === "ok") systemSignals.ziwei = extractZiweiSignals(ziweiResult.data);
-    if (zodiacResult.status === "ok") {
-      systemSignals.zodiac = extractZodiacLifeSignals(zodiacResult.data);
-    }
+    if (zodiacResult.status === "ok") systemSignals.zodiac = extractZodiacLifeSignals(zodiacResult.data);
     if (astrologyResult.status === "ok") systemSignals.astrology = extractAstrologyLifeSignals(astrologyResult.data);
 
     const lifeGroupSize = Object.keys(systemSignals).length;
@@ -191,17 +205,11 @@ export function LifeForecastClient() {
           try {
             astrologyTransits = calculateTransitsForDate(astrologyResult.data, new Date(year, 6, 1));
           } catch {
-            // transits unavailable for this year — continue without them
+            // transits unavailable for this year
           }
         }
 
-        const synthesis = synthesiseLuckYear(
-          year,
-          baziEntry,
-          personalYearNum,
-          zodiacPolarity,
-          astrologyTransits,
-        );
+        const synthesis = synthesiseLuckYear(year, baziEntry, personalYearNum, zodiacPolarity, astrologyTransits);
 
         return {
           synthesis,
@@ -242,6 +250,22 @@ export function LifeForecastClient() {
 
       <section className="workspace-grid">
         <form onSubmit={handleSubmit} className="oracle-birth-form">
+          <div className="oracle-birth-form__row">
+            <label htmlFor="birth-name" className="oracle-birth-form__label">
+              Name
+              <span className="oracle-birth-form__hint">Used for Numerology name numbers</span>
+            </label>
+            <input
+              id="birth-name"
+              type="text"
+              className="oracle-birth-form__input"
+              placeholder="Full name…"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              disabled={state.isRunning}
+            />
+          </div>
+
           <div className="oracle-birth-form__row">
             <label htmlFor="birth-date" className="oracle-birth-form__label">
               Birth Date <span className="required">*</span>
@@ -329,6 +353,7 @@ export function LifeForecastClient() {
             type="submit"
             className="oracle-birth-form__submit btn-primary"
             disabled={!birthDate || !gender || state.isRunning}
+            style={{ gridColumn: "1 / -1" }}
           >
             {state.isRunning ? "Calculating…" : "Generate Forecast"}
           </button>
@@ -336,37 +361,45 @@ export function LifeForecastClient() {
       </section>
 
       {hasResults && (
-        <>
-          {/* ── Life Profile ─────────────────────────────────────────────── */}
-          <section className="oracle-life-profile">
-            <h2 className="oracle-section-title">Life Profile</h2>
-            <div className="oracle-systems-grid oracle-systems-grid--forecast">
-              <BaziCard result={state.bazi} hasTime={!!birthTime} />
-              <NumerologyCard result={state.numerology} />
-              <ZiweiCard result={state.ziwei} hasTime={!!birthTime} />
-              <ZodiacCard result={state.zodiac} />
-              <AstrologyCard result={state.astrology} hasTime={!!birthTime} />
-            </div>
+        <section>
+          <div className="oracle-tab-bar">
+            {TABS.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                className={`oracle-tab${activeTab === tab.id ? " oracle-tab--active" : ""}`}
+                onClick={() => setActiveTab(tab.id)}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
 
-            {state.lifeProfileSynthesis && (
-              <div className="oracle-synthesis-section">
-                <ThemeOverlapPanel themes={state.lifeProfileSynthesis.themes} />
-                <SynthesisedSummary summary={state.lifeProfileSynthesis.summary} />
-              </div>
+          <div className="oracle-tab-panel">
+            {activeTab === "summary" && (
+              state.lifeProfileSynthesis ? (
+                <div className="oracle-synthesis-section">
+                  <ThemeOverlapPanel themes={state.lifeProfileSynthesis.themes} />
+                  <SynthesisedSummary summary={state.lifeProfileSynthesis.summary} />
+                </div>
+              ) : (
+                <p className="placeholder">Not enough systems succeeded to synthesise a summary.</p>
+              )
             )}
-          </section>
-
-          {/* ── Luck Timeline ─────────────────────────────────────────────── */}
-          {state.luckTimeline && state.luckTimeline.length > 0 && (
-            <section className="oracle-luck-timeline">
-              <h2 className="oracle-section-title">Luck Timeline</h2>
-              <LuckTimelineTable
-                rows={state.luckTimeline}
-                currentYear={new Date().getFullYear()}
-              />
-            </section>
-          )}
-        </>
+            {activeTab === "bazi" && <BaziCard result={state.bazi} hasTime={!!birthTime} />}
+            {activeTab === "numerology" && <NumerologyCard result={state.numerology} />}
+            {activeTab === "ziwei" && <ZiweiCard result={state.ziwei} hasTime={!!birthTime} />}
+            {activeTab === "zodiac" && <ZodiacCard result={state.zodiac} />}
+            {activeTab === "astrology" && <AstrologyCard result={state.astrology} hasTime={!!birthTime} />}
+            {activeTab === "timeline" && (
+              state.luckTimeline && state.luckTimeline.length > 0 ? (
+                <LuckTimelineTable rows={state.luckTimeline} currentYear={new Date().getFullYear()} />
+              ) : (
+                <p className="placeholder">Timeline requires at least BaZi, Numerology, or Zodiac data.</p>
+              )
+            )}
+          </div>
+        </section>
       )}
     </main>
   );
@@ -374,13 +407,7 @@ export function LifeForecastClient() {
 
 // ─── Per-system card sub-components ─────────────────────────────────────────
 
-function BaziCard({
-  result,
-  hasTime,
-}: {
-  result: SystemResult<BaziChart>;
-  hasTime: boolean;
-}) {
+function BaziCard({ result, hasTime }: { result: SystemResult<BaziChart>; hasTime: boolean }) {
   const notice = !hasTime ? "Birth time not provided — hour pillar and some accuracy may be reduced." : undefined;
   if (result.status === "idle") return null;
   if (result.status === "error") {
@@ -404,7 +431,7 @@ function BaziCard({
         <p className="bazi-chart-summary__day-master">
           Day Master: {chart.dayMaster.chinese} {chart.dayMaster.pinyin} — {chart.dayMaster.element} {chart.dayMaster.polarity}
         </p>
-        {chart.interpretation.slice(0, 2).map((line, idx) => (
+        {chart.interpretation.slice(0, 3).map((line, idx) => (
           <p key={idx} className="bazi-chart-summary__interp">{line}</p>
         ))}
       </div>
@@ -422,6 +449,12 @@ function PillarBadge({ label, pillar }: { label: string; pillar: { stem: { chine
   );
 }
 
+const CORE_NUMBER_LABELS: Record<number, string> = {
+  1: "Pioneer", 2: "Diplomat", 3: "Creator", 4: "Builder", 5: "Adventurer",
+  6: "Nurturer", 7: "Seeker", 8: "Powerhouse", 9: "Humanitarian",
+  11: "Illuminator", 22: "Master Builder", 33: "Master Healer",
+};
+
 function NumerologyCard({ result }: { result: SystemResult<NumerologyChart> }) {
   if (result.status === "idle") return null;
   if (result.status === "error") {
@@ -433,29 +466,72 @@ function NumerologyCard({ result }: { result: SystemResult<NumerologyChart> }) {
   }
   if (result.status !== "ok") return null;
   const chart = result.data;
+
+  const coreNumbers = [
+    { label: "Life Path", labelZh: "生命靈數", value: chart.lifePathNumber },
+    { label: "Birthday", labelZh: "生日數", value: chart.birthdayNumber },
+    ...(chart.expressionNumber != null ? [{ label: "Expression", labelZh: "表達數", value: chart.expressionNumber }] : []),
+    ...(chart.soulUrgeNumber != null ? [{ label: "Soul Urge", labelZh: "靈魂數", value: chart.soulUrgeNumber }] : []),
+    ...(chart.personalityNumber != null ? [{ label: "Personality", labelZh: "個性數", value: chart.personalityNumber }] : []),
+    { label: "Personal Year", labelZh: "流年數", value: chart.personalYearNumber },
+  ];
+
   return (
     <PerSystemCard systemId="numerology" nameZh="數字學" nameEn="Numerology" tradition="East-West">
       <div className="numerology-summary">
-        <div className="numerology-summary__numbers">
-          <span className="numerology-summary__num">
-            <strong>Life Path</strong> {chart.lifePathNumber}
-          </span>
-          {chart.expressionNumber != null && (
-            <span className="numerology-summary__num">
-              <strong>Expression</strong> {chart.expressionNumber}
-            </span>
-          )}
-          {chart.soulUrgeNumber != null && (
-            <span className="numerology-summary__num">
-              <strong>Soul Urge</strong> {chart.soulUrgeNumber}
-            </span>
-          )}
+        <div className="numerology-oracle-grid">
+          {coreNumbers.map(({ label, labelZh, value }) => (
+            <div key={label} className="numerology-oracle-cell">
+              <span className="numerology-oracle-cell__num">{value}</span>
+              <span className="numerology-oracle-cell__label">{label}</span>
+              <span className="numerology-oracle-cell__zh">{labelZh}</span>
+              {CORE_NUMBER_LABELS[value] && (
+                <span className="numerology-oracle-cell__keyword">{CORE_NUMBER_LABELS[value]}</span>
+              )}
+            </div>
+          ))}
         </div>
+        {chart.dominantElement && (
+          <p className="numerology-summary__element">
+            Dominant Element: <strong>{chart.dominantElement}</strong>
+            {chart.lifePathElement ? ` · Life Path Element: ${chart.lifePathElement}` : ""}
+          </p>
+        )}
         {chart.interpretation.length > 0 && (
-          <p className="numerology-summary__interp">{chart.interpretation.join(" ")}</p>
+          <div className="numerology-summary__interp">
+            <NumerologyReadingSections lines={chart.interpretation} />
+          </div>
         )}
       </div>
     </PerSystemCard>
+  );
+}
+
+function NumerologyReadingSections({ lines }: { lines: string[] }) {
+  const sections: { title?: string; paragraphs: string[] }[] = [];
+  let current: { title?: string; paragraphs: string[] } = { paragraphs: [] };
+
+  for (const line of lines) {
+    if (line.startsWith("## ")) {
+      if (current.title || current.paragraphs.length > 0) sections.push(current);
+      current = { title: line.slice(3), paragraphs: [] };
+    } else if (line.trim()) {
+      current.paragraphs.push(line);
+    }
+  }
+  if (current.title || current.paragraphs.length > 0) sections.push(current);
+
+  return (
+    <div className="reading-sections">
+      {sections.map((s, i) => (
+        <details key={i} className="reading-section" open={i < 2}>
+          {s.title && <summary>{s.title}</summary>}
+          <div className="section-body">
+            {s.paragraphs.map((p, j) => <p key={j}>{p}</p>)}
+          </div>
+        </details>
+      ))}
+    </div>
   );
 }
 
@@ -485,7 +561,7 @@ function ZiweiCard({ result, hasTime }: { result: SystemResult<ZiWeiChart>; hasT
         <p className="ziwei-summary__meta">
           {chart.fiveElementName} · {chart.zodiac} · Hour: {chart.hour} ({chart.hourRange})
         </p>
-        {chart.interpretation.slice(0, 3).map((line, i) => (
+        {chart.interpretation.slice(0, 4).map((line, i) => (
           <p key={i} className="ziwei-summary__interp">{line}</p>
         ))}
       </div>
@@ -513,7 +589,7 @@ function ZodiacCard({ result }: { result: SystemResult<ZodiacReading> }) {
           <span className="zodiac-summary__element">{reading.animal.element} · {reading.animal.polarity}</span>
         </div>
         <p className="zodiac-summary__traits">{reading.animal.traits}</p>
-        {reading.interpretation.slice(0, 2).map((line, i) => (
+        {reading.interpretation.slice(0, 3).map((line, i) => (
           <p key={i} className="zodiac-summary__interp">{line}</p>
         ))}
       </div>
@@ -521,28 +597,14 @@ function ZodiacCard({ result }: { result: SystemResult<ZodiacReading> }) {
   );
 }
 
-function AstrologyCard({
-  result,
-  hasTime,
-}: {
-  result: SystemResult<NatalChart>;
-  hasTime: boolean;
-}) {
-  const timeNotice = !hasTime
-    ? "Birth time not provided — houses and Ascendant are approximated."
-    : undefined;
+function AstrologyCard({ result, hasTime }: { result: SystemResult<NatalChart>; hasTime: boolean }) {
+  const timeNotice = !hasTime ? "Birth time not provided — houses and Ascendant are approximated." : undefined;
 
   if (result.status === "idle") return null;
 
   if (result.status === "skipped") {
     return (
-      <PerSystemCard
-        systemId="astrology"
-        nameZh="西洋占星"
-        nameEn="Astrology"
-        tradition="Western"
-        notice={result.reason}
-      >
+      <PerSystemCard systemId="astrology" nameZh="西洋占星" nameEn="Astrology" tradition="Western" notice={result.reason}>
         <p className="system-skipped">{result.reason}</p>
       </PerSystemCard>
     );
@@ -561,13 +623,7 @@ function AstrologyCard({
   const moon = chart.planets.find((p) => p.planet === "Moon");
 
   return (
-    <PerSystemCard
-      systemId="astrology"
-      nameZh="西洋占星"
-      nameEn="Astrology"
-      tradition="Western"
-      notice={timeNotice}
-    >
+    <PerSystemCard systemId="astrology" nameZh="西洋占星" nameEn="Astrology" tradition="Western" notice={timeNotice}>
       <div className="astrology-summary">
         <div className="astrology-summary__big-three">
           {sun && <span><strong>☉</strong> {sun.sign}</span>}
